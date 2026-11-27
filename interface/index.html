@@ -1,0 +1,3509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEBIX — Liquid Glass AI Assistant Overlay</title>
+  <style>
+    /* ==========================================================================
+       1. ~85% LIQUID GLASS TRANSPARENCY & WIDESCREEN DESKTOP TOKENS
+       ========================================================================== */
+    :root {
+      /* ~85% see-through clarity: ~15% glass tint so desktop wallpaper shines clearly */
+      --glass-tint: rgba(10, 20, 34, 0.15);
+      --glass-card-tint: rgba(12, 24, 42, 0.15);
+      --glass-card-hover: rgba(18, 38, 66, 0.24);
+      --glass-bar-tint: rgba(10, 20, 36, 0.17);
+      --glass-modal-tint: rgba(8, 16, 30, 0.78);
+      --edge-specular: rgba(235, 252, 255, 0.64);
+      --edge-cyan: rgba(56, 242, 255, 0.42);
+      --edge-gold: rgba(255, 209, 102, 0.38);
+      --cyan: #38f2ff;
+      --cyan-deep: #00b4d8;
+      --gold: #ffd166;
+      --gold-deep: #f4a261;
+      --text-primary: #f4faff;
+      --text-secondary: rgba(218, 238, 255, 0.8);
+      --text-muted: rgba(178, 210, 238, 0.56);
+      --danger: #ff6b8b;
+      --success: #34eba8;
+      --font-sans: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Desktop overlay host: transparent by default so desktop wallpaper/host shines through */
+    html, body {
+      width: 100%;
+      height: 100%;
+      min-width: 1024px;
+      background: transparent !important;
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      overflow: hidden;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Optional Wallpaper Preview Layer (OFF by default for true desktop pass-through) */
+    .wallpaper-preview-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      background:
+        radial-gradient(circle at 18% 24%, rgba(0, 165, 225, 0.34) 0%, transparent 46%),
+        radial-gradient(circle at 82% 72%, rgba(244, 162, 97, 0.26) 0%, transparent 48%),
+        radial-gradient(circle at 50% 48%, #0c1a2c 0%, #040812 100%);
+    }
+
+    .wallpaper-preview-layer.active {
+      opacity: 1;
+    }
+
+    /* Subtle architectural grid & ambient bokeh lights when Wallpaper Preview is enabled */
+    .wallpaper-preview-layer::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(2px 2px at 14% 32%, rgba(255, 214, 130, 0.82), transparent),
+        radial-gradient(3px 3px at 22% 48%, rgba(86, 215, 255, 0.78), transparent),
+        radial-gradient(2px 2px at 78% 28%, rgba(255, 214, 130, 0.72), transparent),
+        radial-gradient(3px 3px at 84% 62%, rgba(86, 215, 255, 0.72), transparent),
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 64px 64px, 64px 64px;
+    }
+
+    /* ==========================================================================
+       2. LIQUID GLASS CHASSIS (WIDESCREEN DESKTOP OPTICS & RIM DEPTH)
+       ========================================================================== */
+    .overlay-viewport {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 24px;
+    }
+
+    .liquid-glass-frame {
+      position: relative;
+      width: min(96vw, 1560px);
+      min-width: 976px;
+      height: min(93vh, 920px);
+      min-height: 620px;
+      border-radius: 34px;
+      background: var(--glass-tint);
+      backdrop-filter: blur(10px) saturate(135%);
+      -webkit-backdrop-filter: blur(10px) saturate(135%);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.16) inset,
+        0 2px 20px rgba(255, 255, 255, 0.14) inset,
+        0 0 42px rgba(56, 242, 255, 0.12),
+        0 24px 68px rgba(0, 0, 0, 0.38);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 16px 26px 18px;
+      overflow: hidden;
+      transition: transform 0.22s ease-out;
+    }
+
+    /* Razor-sharp refractive liquid-glass border rim */
+    .liquid-glass-frame::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 34px;
+      padding: 1.5px;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.78) 0%,
+        rgba(56, 242, 255, 0.44) 24%,
+        rgba(255, 255, 255, 0.10) 50%,
+        rgba(255, 209, 102, 0.40) 76%,
+        rgba(235, 250, 255, 0.72) 100%
+      );
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* Top specular highlight line */
+    .liquid-glass-frame::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 9%;
+      right: 9%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent);
+      pointer-events: none;
+      z-index: 11;
+    }
+
+    /* ==========================================================================
+       3. TOP BAR (MINIMAL NEBIX HEADER & DESKTOP CONTROLS)
+       ========================================================================== */
+    :root {
+      --glass-tint: rgba(10, 20, 34, 0.14);
+      --glass-card-tint: rgba(12, 24, 42, 0.18);
+      --glass-card-hover: rgba(18, 36, 62, 0.28);
+      --glass-modal-tint: rgba(8, 16, 28, 0.72);
+      --edge-specular: rgba(230, 250, 255, 0.58);
+      --edge-cyan: rgba(56, 242, 255, 0.36);
+      --edge-gold: rgba(255, 209, 102, 0.32);
+      --cyan: #38f2ff;
+      --cyan-deep: #00b4d8;
+      --gold: #ffd166;
+      --gold-deep: #f4a261;
+      --text-primary: #f4faff;
+      --text-secondary: rgba(215, 236, 255, 0.76);
+      --text-muted: rgba(175, 206, 235, 0.52);
+      --danger: #ff6b8b;
+      --success: #34eba8;
+      --font-sans: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* 100% Transparent background for Wallpaper Engine, Electron, Rainmeter, WebView2 */
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: transparent !important;
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      overflow: hidden;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Optional Wallpaper Preview Layer (OFF by default so desktop shines through) */
+    .wallpaper-preview-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.45s ease;
+      background:
+        radial-gradient(circle at 20% 25%, rgba(0, 145, 215, 0.35) 0%, transparent 45%),
+        radial-gradient(circle at 80% 70%, rgba(244, 162, 97, 0.28) 0%, transparent 48%),
+        radial-gradient(circle at 50% 50%, #0d1b2a 0%, #040811 100%);
+    }
+
+    .wallpaper-preview-layer.active {
+      opacity: 1;
+    }
+
+    /* Subtle architectural grid & bokeh lights only visible when Preview Wallpaper is toggled ON */
+    .wallpaper-preview-layer::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(2px 2px at 14% 32%, rgba(255, 214, 130, 0.8), transparent),
+        radial-gradient(3px 3px at 22% 48%, rgba(86, 215, 255, 0.75), transparent),
+        radial-gradient(2px 2px at 78% 28%, rgba(255, 214, 130, 0.7), transparent),
+        radial-gradient(3px 3px at 84% 62%, rgba(86, 215, 255, 0.7), transparent),
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 64px 64px, 64px 64px;
+    }
+
+    /* ==========================================================================
+       2. LIQUID GLASS CHASSIS (CURVED SPECULAR OPTICS)
+       ========================================================================== */
+    .overlay-viewport {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(10px, 1.8vw, 24px);
+    }
+
+    .liquid-glass-frame {
+      position: relative;
+      width: min(97vw, 1500px);
+      height: min(94vh, 880px);
+      border-radius: 34px;
+      background: var(--glass-tint);
+      backdrop-filter: blur(8px) saturate(135%);
+      -webkit-backdrop-filter: blur(8px) saturate(135%);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.14) inset,
+        0 2px 18px rgba(255, 255, 255, 0.12) inset,
+        0 0 36px rgba(56, 242, 255, 0.10),
+        0 24px 64px rgba(0, 0, 0, 0.42);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: clamp(14px, 1.8vw, 22px) clamp(18px, 2.2vw, 28px);
+      overflow: hidden;
+      transition: transform 0.25s ease-out;
+    }
+
+    /* Razor-sharp refractive glass edge rim */
+    .liquid-glass-frame::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 34px;
+      padding: 1.5px;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.72) 0%,
+        rgba(56, 242, 255, 0.38) 24%,
+        rgba(255, 255, 255, 0.08) 50%,
+        rgba(255, 209, 102, 0.36) 76%,
+        rgba(230, 248, 255, 0.68) 100%
+      );
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* Subtle top glass reflection sheen */
+    .liquid-glass-frame::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 8%;
+      right: 8%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent);
+      pointer-events: none;
+      z-index: 11;
+    }
+
+    /* ==========================================================================
+       3. TOP BAR (MINIMAL NEBIX HEADER & CONTROLS)
+       ========================================================================== */
+    .hud-topbar {
+      position: relative;
+      z-index: 8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .glass-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(12, 24, 42, 0.16);
+      border: 1px solid rgba(225, 248, 255, 0.24);
+      box-shadow: 0 1px 6px rgba(255, 255, 255, 0.09) inset;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+    }
+
+    .pulse-indicator {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan);
+      transition: background 0.25s, box-shadow 0.25s;
+    }
+
+    .pulse-indicator.listening {
+      background: var(--gold);
+      box-shadow: 0 0 12px var(--gold);
+    }
+
+    .pulse-indicator.thinking {
+      background: #a78bfa;
+      box-shadow: 0 0 12px #a78bfa;
+    }
+
+    .topbar-center-brand {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .nebix-wordmark {
+      font-size: clamp(1.15rem, 1.8vw, 1.55rem);
+      font-weight: 700;
+      letter-spacing: 0.34em;
+      padding-left: 0.34em;
+      background: linear-gradient(180deg, #ffffff 15%, rgba(190, 238, 255, 0.86) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 24px rgba(56, 242, 255, 0.25);
+    }
+
+    .nebix-substate {
+      font-size: 0.65rem;
+      letter-spacing: 0.22em;
+      padding-left: 0.22em;
+      color: var(--text-muted);
+      margin-top: 2px;
+      text-transform: uppercase;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .glass-icon-btn {
+      height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(225, 248, 255, 0.24);
+      background: rgba(12, 24, 42, 0.16);
+      box-shadow: 0 1px 5px rgba(255, 255, 255, 0.09) inset;
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .glass-icon-btn.round {
+      width: 34px;
+      padding: 0;
+    }
+
+    .glass-icon-btn:hover {
+      background: rgba(56, 242, 255, 0.16);
+      border-color: rgba(56, 242, 255, 0.55);
+      color: #ffffff;
+      box-shadow: 0 0 16px rgba(56, 242, 255, 0.22);
+    }
+
+    .glass-icon-btn.active {
+      background: rgba(56, 242, 255, 0.2);
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    /* ==========================================================================
+       4. CENTER STAGE (LEFT VERTICAL DOCK + 3D SILK-LIGHT PLASMA SPHERE)
+       ========================================================================== */
+    .hud-center-stage {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      margin: 4px 0;
+    }
+
+    /* High-DPI Photorealistic 3D Plasma Sphere & Silk Ribbons Canvas */
+    #nebix-core-canvas {
+      position: absolute;
+      inset: -16px -28px;
+      width: calc(100% + 56px);
+      height: calc(100% + 32px);
+      z-index: 2;
+      cursor: pointer;
+    }
+
+    /* Left Vertical Liquid-Glass Dock (Matching reference left vertical rail) */
+    .left-glass-dock {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 7px;
+      border-radius: 999px;
+      background: rgba(12, 24, 42, 0.16);
+      border: 1px solid rgba(225, 248, 255, 0.25);
+      box-shadow:
+        0 1px 8px rgba(255, 255, 255, 0.11) inset,
+        0 10px 28px rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(10px);
+    }
+
+    .dock-item {
+      position: relative;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .dock-item:hover,
+    .dock-item.active {
+      color: var(--cyan);
+      background: rgba(56, 242, 255, 0.14);
+      border-color: rgba(56, 242, 255, 0.45);
+      box-shadow: 0 0 14px rgba(56, 242, 255, 0.22);
+    }
+
+    .dock-item[data-tip]::after {
+      content: attr(data-tip);
+      position: absolute;
+      left: 46px;
+      white-space: nowrap;
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: rgba(8, 16, 28, 0.85);
+      border: 1px solid rgba(56, 242, 255, 0.35);
+      color: #fff;
+      font-size: 0.72rem;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-4px);
+      transition: all 0.16s ease;
+    }
+
+    .dock-item:hover::after {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* Right-Side Live Audio/Signal Spectrum (Matching reference right vertical bars) */
+    .right-spectrum-widget {
+      position: absolute;
+      right: 4px;
+      bottom: 14px;
+      z-index: 7;
+      padding: 10px 13px;
+      border-radius: 16px;
+      background: rgba(12, 24, 42, 0.15);
+      border: 1px solid rgba(225, 248, 255, 0.22);
+      box-shadow: 0 1px 6px rgba(255, 255, 255, 0.09) inset;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 122px;
+      pointer-events: none;
+    }
+
+    .spectrum-bars {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      height: 36px;
+      gap: 5px;
+    }
+
+    .spectrum-bar {
+      width: 6px;
+      border-radius: 4px;
+      background: linear-gradient(180deg, var(--gold) 0%, var(--cyan) 100%);
+      box-shadow: 0 0 8px rgba(56, 242, 255, 0.35);
+      transition: height 0.12s ease-out;
+    }
+
+    .spectrum-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      color: var(--text-secondary);
+    }
+
+    /* Translucent AI Response Overlay Toast */
+    .response-overlay {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%) translateY(6px);
+      z-index: 9;
+      width: min(90%, 740px);
+      padding: 11px 16px;
+      border-radius: 16px;
+      background: rgba(10, 20, 36, 0.56);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(56, 242, 255, 0.38);
+      box-shadow:
+        0 1px 8px rgba(255, 255, 255, 0.1) inset,
+        0 14px 36px rgba(0, 0, 0, 0.45);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .response-overlay.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+
+    .response-tag {
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: rgba(56, 242, 255, 0.16);
+      border: 1px solid rgba(56, 242, 255, 0.4);
+      color: var(--cyan);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .response-body {
+      flex: 1;
+      font-size: 0.85rem;
+      line-height: 1.48;
+      color: var(--text-primary);
+      user-select: text;
+    }
+
+    .response-dismiss {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 1.05rem;
+      line-height: 1;
+      padding: 2px 4px;
+    }
+
+    .response-dismiss:hover {
+      color: #fff;
+    }
+
+    /* ==========================================================================
+       5. BOTTOM WORKSPACE CARDS (WIDESCREEN DESKTOP STRIP)
+       ========================================================================== */
+    .bottom-cards-grid {
+      position: relative;
+      z-index: 8;
+      display: grid;
+      grid-template-columns: 1.32fr 0.92fr 0.92fr 1.02fr 1.22fr;
+      gap: 13px;
+      margin-bottom: 13px;
+    }
+
+    .bottom-cards-grid #session-log-card {
+      grid-column: -2;
+    }
+
+    .quick-access-panel {
+      flex-direction: column;
+    }
+
+    .quick-access-content {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      flex-direction: column;
+      gap: 12px;
+      padding: 16px 20px 20px;
+    }
+
+    .quick-access-toolbar,
+    .quick-access-filters {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .quick-access-toolbar .glass-text-field {
+      min-width: 0;
+    }
+
+    .quick-access-filters {
+      flex-wrap: wrap;
+    }
+
+    .quick-access-filter {
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(220, 245, 255, 0.22);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      font-size: 0.76rem;
+      cursor: pointer;
+    }
+
+    .quick-access-filter.active {
+      border-color: rgba(56, 242, 255, 0.45);
+      background: rgba(56, 242, 255, 0.15);
+      color: var(--cyan);
+    }
+
+    .quick-access-status {
+      min-height: 1.1em;
+      font-size: 0.76rem;
+      color: var(--text-secondary);
+    }
+
+    .quick-access-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+      align-content: start;
+      gap: 9px;
+      overflow-y: auto;
+      min-height: 0;
+      padding: 2px;
+    }
+
+    .quick-access-app {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px;
+      border-radius: 12px;
+      border: 1px solid rgba(220, 245, 255, 0.16);
+      background: rgba(12, 22, 38, 0.4);
+    }
+
+    .quick-access-app:hover {
+      border-color: rgba(56, 242, 255, 0.42);
+      background: rgba(56, 242, 255, 0.08);
+    }
+
+    .quick-access-launch {
+      min-width: 0;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      border: 0;
+      padding: 0;
+      color: #eef7ff;
+      background: transparent;
+      text-align: left;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .quick-access-icon {
+      width: 34px;
+      height: 34px;
+      flex: 0 0 34px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 9px;
+      border: 1px solid rgba(56, 242, 255, 0.22);
+      background: rgba(56, 242, 255, 0.09);
+      color: var(--cyan);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .quick-access-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .quick-access-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 0.78rem;
+    }
+
+    .quick-access-pin {
+      flex: 0 0 auto;
+      border: 0;
+      padding: 5px;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .quick-access-pin.active {
+      color: #ffd166;
+    }
+
+    .liquid-card {
+      position: relative;
+      background: var(--glass-card-tint);
+      border: 1px solid rgba(225, 248, 255, 0.24);
+      border-radius: 18px;
+      padding: 11px 14px;
+      box-shadow: 0 1px 8px rgba(255, 255, 255, 0.09) inset;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 112px;
+      transition: all 0.2s ease;
+    }
+
+    .liquid-card:hover {
+      background: var(--glass-card-hover);
+      border-color: rgba(56, 242, 255, 0.45);
+      transform: translateY(-2px);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #eaf6ff;
+      margin-bottom: 6px;
+    }
+
+    .card-title-group {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+
+
+
+
+
+
+    .metric-caption {
+      font-size: 0.73rem;
+      color: var(--text-secondary);
+    }
+
+
+
+
+    .status-badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 9px;
+      border-radius: 8px;
+      background: rgba(255, 209, 102, 0.14);
+      border: 1px solid rgba(255, 209, 102, 0.34);
+      color: #ffe099;
+      font-size: 0.74rem;
+      width: fit-content;
+    }
+
+
+
+
+    /* ==========================================================================
+       6. BOTTOM COMMAND & MULTI-FILE ATTACHMENT BAR
+       ========================================================================== */
+    .command-dock-wrapper {
+      position: relative;
+      z-index: 9;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .attachments-strip {
+      display: none;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .attachments-strip.has-items {
+      display: flex;
+    }
+
+    .file-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 4px 10px;
+      border-radius: 10px;
+      background: rgba(12, 24, 42, 0.45);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(56, 242, 255, 0.4);
+      font-size: 0.75rem;
+      color: var(--cyan);
+    }
+
+    .file-chip img {
+      width: 22px;
+      height: 22px;
+      border-radius: 5px;
+      object-fit: cover;
+    }
+
+    .file-chip button {
+      background: transparent;
+      border: none;
+      color: var(--danger);
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0 2px;
+    }
+
+    .command-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--glass-bar-tint);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(225, 248, 255, 0.28);
+      box-shadow:
+        0 1px 10px rgba(255, 255, 255, 0.11) inset,
+        0 10px 30px rgba(0, 0, 0, 0.32);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .command-bar:focus-within {
+      border-color: rgba(56, 242, 255, 0.65);
+      box-shadow:
+        0 1px 10px rgba(255, 255, 255, 0.14) inset,
+        0 0 24px rgba(56, 242, 255, 0.2);
+    }
+
+    .bar-circle-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid rgba(220, 245, 255, 0.24);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+
+    .bar-circle-btn:hover {
+      background: rgba(56, 242, 255, 0.18);
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    .bar-circle-btn.mic-active {
+      background: rgba(255, 209, 102, 0.24);
+      border-color: var(--gold);
+      color: var(--gold);
+      box-shadow: 0 0 16px rgba(255, 209, 102, 0.4);
+    }
+
+    .command-text-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #ffffff;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      padding: 4px 6px;
+    }
+
+    .command-text-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .send-command-btn {
+      height: 34px;
+      padding: 0 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(56, 242, 255, 0.55);
+      background: linear-gradient(135deg, rgba(56, 242, 255, 0.25), rgba(0, 180, 216, 0.32));
+      color: #ffffff;
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: 0.8rem;
+      letter-spacing: 0.03em;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+
+    .send-command-btn:hover {
+      background: linear-gradient(135deg, rgba(56, 242, 255, 0.42), rgba(0, 180, 216, 0.5));
+      box-shadow: 0 0 18px rgba(56, 242, 255, 0.35);
+    }
+
+    /* ==========================================================================
+       7. LIQUID GLASS SETTINGS MODAL
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: rgba(4, 10, 18, 0.55);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .settings-glass-panel {
+      width: min(94vw, 840px);
+      height: min(84vh, 590px);
+      border-radius: 26px;
+      background: var(--glass-modal-tint);
+      backdrop-filter: blur(22px) saturate(145%);
+      -webkit-backdrop-filter: blur(22px) saturate(145%);
+      border: 1.5px solid rgba(220, 245, 255, 0.34);
+      box-shadow:
+        0 1px 12px rgba(255, 255, 255, 0.12) inset,
+        0 28px 80px rgba(0, 0, 0, 0.72);
+      display: flex;
+      overflow: hidden;
+    }
+
+    .settings-nav {
+      width: 215px;
+      background: rgba(6, 12, 22, 0.48);
+      border-right: 1px solid rgba(220, 245, 255, 0.16);
+      padding: 20px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .settings-nav-header {
+      padding: 0 10px 14px;
+      border-bottom: 1px solid rgba(220, 245, 255, 0.14);
+      margin-bottom: 8px;
+    }
+
+    .settings-nav-header h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: #fff;
+    }
+
+    .settings-nav-header p {
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      margin-top: 3px;
+    }
+
+    .nav-tab-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      font-weight: 500;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .nav-tab-btn:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+    }
+
+    .nav-tab-btn.active {
+      background: rgba(56, 242, 255, 0.16);
+      border-color: rgba(56, 242, 255, 0.4);
+      color: var(--cyan);
+    }
+
+    .settings-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .settings-main-header {
+      padding: 16px 22px;
+      border-bottom: 1px solid rgba(220, 245, 255, 0.14);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .settings-main-header h3 {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .modal-close-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid rgba(220, 245, 255, 0.24);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close-btn:hover {
+      background: rgba(255, 107, 139, 0.24);
+      border-color: var(--danger);
+      color: #fff;
+    }
+
+    .settings-scroll-body {
+      flex: 1;
+      padding: 20px 22px;
+      overflow-y: auto;
+      user-select: text;
+    }
+
+    .settings-tab-panel {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .settings-tab-panel.active {
+      display: flex;
+    }
+
+    .field-block {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field-label {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: #eef7ff;
+    }
+
+    .field-desc {
+      font-size: 0.76rem;
+      color: var(--text-secondary);
+      line-height: 1.48;
+    }
+
+    .field-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .glass-text-field {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(220, 245, 255, 0.26);
+      background: rgba(6, 12, 22, 0.56);
+      color: #fff;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .glass-text-field:focus {
+      border-color: var(--cyan);
+    }
+
+    .btn-accent {
+      padding: 9px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(56, 242, 255, 0.48);
+      background: rgba(56, 242, 255, 0.2);
+      color: #fff;
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+
+    .btn-accent:hover {
+      background: rgba(56, 242, 255, 0.34);
+    }
+
+    .btn-ghost {
+      padding: 9px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(220, 245, 255, 0.22);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .btn-ghost:hover {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.45);
+    }
+
+    /* 6 Voices Grid */
+    .voices-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .voice-option-card {
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(220, 245, 255, 0.2);
+      background: rgba(12, 22, 38, 0.45);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.18s ease;
+    }
+
+    .voice-option-card:hover {
+      border-color: rgba(56, 242, 255, 0.45);
+    }
+
+    .voice-option-card.selected {
+      background: rgba(56, 242, 255, 0.16);
+      border-color: var(--cyan);
+      box-shadow: 0 0 18px rgba(56, 242, 255, 0.18);
+    }
+
+    .voice-title {
+      font-weight: 600;
+      font-size: 0.88rem;
+      color: #fff;
+    }
+
+    .voice-meta {
+      font-size: 0.73rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .voice-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid rgba(220, 245, 255, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .voice-option-card.selected .voice-dot {
+      border-color: var(--cyan);
+    }
+
+    .voice-option-card.selected .voice-dot::after {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--cyan);
+    }
+
+    /* Session-Only Activity Log */
+    .session-notice {
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: rgba(255, 209, 102, 0.12);
+      border: 1px solid rgba(255, 209, 102, 0.32);
+      color: #ffe29e;
+      font-size: 0.76rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .session-log-stream {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .session-entry {
+      padding: 11px 14px;
+      border-radius: 14px;
+      background: rgba(12, 22, 38, 0.48);
+      border: 1px solid rgba(220, 245, 255, 0.18);
+      font-size: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .session-entry-header {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .entry-input {
+      color: #a8f0ff;
+    }
+
+    .entry-output {
+      color: #ffe4a8;
+    }
+
+    /* Permissions Switches */
+    .permission-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(12, 22, 38, 0.45);
+      border: 1px solid rgba(220, 245, 255, 0.18);
+      gap: 14px;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 42px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      transition: 0.2s;
+    }
+
+    .toggle-track::before {
+      content: "";
+      position: absolute;
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: 0.2s;
+    }
+
+    .toggle-switch input:checked + .toggle-track {
+      background: var(--cyan);
+    }
+
+    .toggle-switch input:checked + .toggle-track::before {
+      transform: translateX(18px);
+      background: #04101e;
+    }
+
+    /* About Panel */
+    .about-glass-box {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      color: var(--text-secondary);
+    }
+
+    .about-hero {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(56, 242, 255, 0.12), rgba(12, 22, 38, 0.62));
+      border: 1px solid rgba(56, 242, 255, 0.24);
+    }
+
+    .about-eyebrow {
+      color: var(--cyan);
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    .about-title {
+      margin: 6px 0;
+      color: var(--text-primary);
+      font-size: 1.18rem;
+      line-height: 1.3;
+    }
+
+    .about-copy {
+      max-width: 650px;
+      margin: 0;
+      font-size: 0.82rem;
+      line-height: 1.55;
+    }
+
+    .about-version {
+      flex: 0 0 auto;
+      padding: 6px 10px;
+      border: 1px solid rgba(56, 242, 255, 0.25);
+      border-radius: 999px;
+      background: rgba(56, 242, 255, 0.1);
+      color: var(--cyan);
+      font-size: 0.72rem;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+
+    .about-summary-grid,
+    .about-capabilities-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+    }
+
+    .about-info-card,
+    .about-section {
+      min-width: 0;
+      padding: 14px;
+      border: 1px solid rgba(220, 245, 255, 0.15);
+      border-radius: 14px;
+      background: rgba(12, 22, 38, 0.48);
+    }
+
+    .about-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .about-section-title,
+    .about-info-title {
+      margin: 0;
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      font-weight: 650;
+    }
+
+    .about-info-copy {
+      margin: 6px 0 0;
+      font-size: 0.79rem;
+      line-height: 1.5;
+    }
+
+    .about-feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      gap: 8px;
+    }
+
+    .about-feature {
+      padding: 9px 10px;
+      border: 1px solid rgba(56, 242, 255, 0.16);
+      border-radius: 10px;
+      background: rgba(56, 242, 255, 0.055);
+      color: var(--text-primary);
+      font-size: 0.75rem;
+      line-height: 1.35;
+    }
+
+    .about-capability {
+      padding-left: 11px;
+      border-left: 2px solid rgba(56, 242, 255, 0.55);
+    }
+
+    .about-capability-label {
+      color: var(--cyan);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .about-capability-copy {
+      margin: 5px 0 0;
+      font-size: 0.77rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1100px) {
+      .bottom-cards-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .right-spectrum-widget {
+        display: none;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .liquid-glass-frame {
+        width: 98vw;
+        height: 96vh;
+        border-radius: 24px;
+        padding: 12px;
+      }
+      .left-glass-dock {
+        display: none;
+      }
+      .bottom-cards-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .settings-glass-panel {
+        flex-direction: column;
+        height: 90vh;
+      }
+      .settings-nav {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+        border-right: none;
+        border-bottom: 1px solid rgba(220, 245, 255, 0.16);
+        padding: 10px;
+      }
+      .settings-nav-header {
+        display: none;
+      }
+      .voices-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Optional Wallpaper Preview Layer (OFF by default so 100% transparent desktop shows through) -->
+  <div class="wallpaper-preview-layer" id="wallpaper-preview-layer"></div>
+
+  <!-- Main 100% Transparent Liquid-Glass Overlay Viewport -->
+  <div class="overlay-viewport">
+    <main class="liquid-glass-frame" id="nebix-frame">
+
+      <!-- TOP BAR -->
+      <header class="hud-topbar">
+        <div class="topbar-left">
+          <div class="glass-pill">
+            <span class="pulse-indicator" id="status-led"></span>
+            <span id="live-date-label">---</span>
+            <span>•</span>
+            <span id="live-time-label">--:--:--</span>
+          </div>
+        </div>
+
+        <!-- Minimal High-Tech NEBIX Wordmark (No Namaste / No Greeting Text) -->
+        <div class="topbar-center-brand">
+          <div class="nebix-wordmark">NEBIX</div>
+          <div class="nebix-substate" id="core-status-text">STANDBY</div>
+        </div>
+
+        <div class="topbar-right">
+          <button class="glass-icon-btn" id="toggle-wallpaper-btn" title="Test how liquid glass looks over a sample wallpaper">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="3"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+            <span id="wallpaper-btn-label">switch</span>
+          </button>
+
+          <button class="glass-icon-btn round" id="open-log-quick-btn" title="Session Activity Log">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+            </svg>
+          </button>
+
+          <button class="glass-icon-btn round" id="open-settings-btn" title="NEBIX Settings">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- CENTER STAGE: PHOTOREALISTIC 3D PLASMA & SILK-LIGHT RIBBONS -->
+      <section class="hud-center-stage">
+        <canvas id="nebix-core-canvas" title="Click core to toggle voice listening"></canvas>
+
+        <!-- Left Vertical Liquid-Glass Dock -->
+        <aside class="left-glass-dock" aria-label="NEBIX Quick Navigation">
+          <button class="dock-item active" data-tip="NEBIX Core" id="dock-core-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="9"></circle>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+          <button class="dock-item" data-tip="Voices (6 Profiles)" data-open-tab="voice">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+            </svg>
+          </button>
+          <button class="dock-item" data-tip="Activity Log (Session)" data-open-tab="activity">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+            </svg>
+          </button>
+          <button class="dock-item" data-tip="Quick Access" id="quick-access-btn" aria-label="Quick Access">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+              <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+              <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+              <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+            </svg>
+          </button>
+          <button class="dock-item" data-tip="Attach Files" id="dock-attach-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+            </svg>
+          </button>
+          <button class="dock-item" data-tip="Settings" data-open-tab="apikey">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </button>
+        </aside>
+
+        <!-- Right-Side Live Audio/Signal Spectrum -->
+        <div class="right-spectrum-widget" aria-hidden="true">
+          <div class="spectrum-bars" id="spectrum-bars">
+            <div class="spectrum-bar" style="height: 4px;"></div>
+            <div class="spectrum-bar" style="height: 4px;"></div>
+            <div class="spectrum-bar" style="height: 4px;"></div>
+            <div class="spectrum-bar" style="height: 4px;"></div>
+            <div class="spectrum-bar" style="height: 4px;"></div>
+            <div class="spectrum-bar" style="height: 4px;"></div>
+            <div class="spectrum-bar" style="height: 4px;"></div>
+          </div>
+          <div class="spectrum-label">
+            <span id="voice-badge-label">CHARON</span>
+            <span style="color: var(--cyan);">●</span>
+          </div>
+        </div>
+
+        <!-- Sleek Translucent Response Toast -->
+        <div class="response-overlay" id="response-overlay" role="status">
+          <span class="response-tag">NEBIX</span>
+          <div class="response-body" id="response-body-text"></div>
+          <button class="response-dismiss" id="dismiss-response-btn" title="Dismiss">×</button>
+        </div>
+      </section>
+
+      <!-- BOTTOM WORKSPACE CARDS -->
+      <section class="bottom-cards-grid" aria-label="NEBIX Workspace Cards">
+        <article class="liquid-card" id="session-log-card" style="cursor:pointer;" title="Open Session Activity Log">
+          <div class="card-top">
+            <div class="card-title-group">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffd166" stroke-width="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+              <span>Activity</span>
+            </div>
+          </div>
+          <div class="status-badge-pill" id="session-counter-badge">0 Events</div>
+          <div class="metric-caption">Activity reported by the NEBIX backend.</div>
+        </article>
+
+      </section>
+
+      <!-- BOTTOM COMMAND INPUT BAR WITH MULTI-FILE ATTACHMENT -->
+      <footer class="command-dock-wrapper">
+        <!-- Multi-File / Image Attachment Chips -->
+        <div class="attachments-strip" id="attachments-strip"></div>
+
+        <input
+          type="file"
+          id="multi-file-input"
+          multiple
+          accept="image/png,image/jpeg,image/webp,.pdf,.txt,.json,.csv"
+          hidden
+        />
+
+        <div class="command-bar">
+          <button type="button" class="bar-circle-btn" id="attach-files-btn" title="Attach files or images">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+            </svg>
+          </button>
+
+          <button type="button" class="bar-circle-btn" id="mic-toggle-btn" title="Enable Voice Input" aria-label="Enable voice input" aria-pressed="false">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+            </svg>
+          </button>
+
+          <input
+            type="text"
+            id="command-text-input"
+            class="command-text-input"
+            placeholder="Enter a command for NEBIX..."
+            autocomplete="off"
+          />
+
+          <button type="button" class="send-command-btn" id="send-command-btn">
+            <span>Send</span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- ==========================================================================
+       8. SETTINGS MODAL (API KEY, 6 VOICES, ACTIVITY LOG, PERMISSIONS, ABOUT)
+       ========================================================================== -->
+  <div class="modal-backdrop" id="settings-backdrop" role="dialog" aria-modal="true" aria-labelledby="settings-heading">
+    <div class="settings-glass-panel">
+      <nav class="settings-nav">
+        <div class="settings-nav-header">
+          <h2>NEBIX</h2>
+          <p>System</p>
+        </div>
+
+        <button class="nav-tab-btn active" data-tab="apikey">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+          </svg>
+          <span>API Key</span>
+        </button>
+
+        <button class="nav-tab-btn" data-tab="voice">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          <span>Voices</span>
+        </button>
+
+        <button class="nav-tab-btn" data-tab="activity">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          <span>Activity Log</span>
+        </button>
+
+        <button class="nav-tab-btn" data-tab="permissions">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+          <span>Permissions</span>
+        </button>
+
+        <button class="nav-tab-btn" data-tab="about">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          <span>About</span>
+        </button>
+      </nav>
+
+      <div class="settings-main">
+        <div class="settings-main-header">
+          <h3 id="settings-heading">API Key Configuration</h3>
+          <button class="modal-close-btn" id="close-settings-btn" title="Close">✕</button>
+        </div>
+
+        <div class="settings-scroll-body">
+          <!-- TAB 1: API KEY -->
+          <div class="settings-tab-panel active" id="tab-apikey">
+            <div class="field-block">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <label class="field-label" for="api-key-field">NEBIX Backend API Key</label>
+                <span id="api-connection-badge" style="font-size:0.74rem; color:var(--text-muted);">Status: Not Configured</span>
+              </div>
+              <p class="field-desc">
+                Save your NEBIX API key.
+              </p>
+              <div class="field-row">
+                <input
+                  type="password"
+                  id="api-key-field"
+                  class="glass-text-field"
+                  placeholder="Enter your NEBIX API key..."
+                />
+                <button type="button" class="btn-ghost" id="toggle-key-vis-btn">Show</button>
+              </div>
+              <div class="field-row" style="margin-top:4px;">
+                <button type="button" class="btn-accent" id="save-key-btn">Save API Key</button>
+                <button type="button" class="btn-ghost" id="clear-key-btn">Clear</button>
+              </div>
+              <p class="field-desc" id="api-save-status" style="color:var(--success);"></p>
+            </div>
+          </div>
+
+          <!-- TAB 2: VOICE SELECTION (ALL 6 VOICES) -->
+          <div class="settings-tab-panel" id="tab-voice">
+            <div class="field-block">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <label class="field-label">Select NEBIX Voice Profile</label>
+                <button type="button" class="btn-accent" id="preview-voice-btn">Preview Voice</button>
+              </div>
+        
+              <div class="voices-grid" id="voices-grid"></div>
+            </div>
+          </div>
+
+          <!-- TAB 3: ACTIVITY LOG (STRICTLY SESSION-ONLY IN-MEMORY) -->
+          <div class="settings-tab-panel" id="tab-activity">
+            <div class="session-notice">
+              <span>Activity is held in memory by the active NEBIX session. Clear it manually or close the application.</span>
+              <button type="button" class="btn-ghost" id="clear-session-btn" style="flex-shrink:0;">Clear Session</button>
+            </div>
+            <div class="session-log-stream" id="session-log-stream"></div>
+          </div>
+
+          <!-- TAB 4: PERMISSIONS -->
+          <div class="settings-tab-panel" id="tab-permissions">
+            <div class="field-label" style="margin-bottom:10px;">Security and Permission</div>
+            <div class="permission-row">
+              <div>
+                <div class="field-label">Computer Use</div>
+                <div class="field-desc">Allow NEBIX to control the desktop with mouse and keyboard actions.</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="perm-computer-use" />
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+            <div class="permission-row">
+              <div>
+                <div class="field-label">Microphone Access</div>
+                <div class="field-desc">Allow real-time speech recognition via the core orb or microphone button.</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="perm-mic" checked />
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+
+            <div class="permission-row">
+              <div>
+                <div class="field-label">File & Vision Access</div>
+                <div class="field-desc">Allow attaching images and documents to NEBIX prompts.</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="perm-files" checked />
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+
+            <div class="permission-row">
+              <div>
+                <div class="field-label">Screen Vision</div>
+                <div class="field-desc">Allow one-time or active-session screen capture when explicitly requested. Screen images are sent to the configured Gemini Live session.</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="perm-screen-observation" />
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+
+            <div class="permission-row">
+              <div>
+                <div class="field-label">Network Access</div>
+                <div class="field-desc">Allow NEBIX to contact configured AI and web services.</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="perm-network-access" />
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+
+            <div class="permission-row">
+              <div>
+                <div class="field-label">Desktop Overlay Mode</div>
+                <div class="field-desc">Enable subtle cursor parallax and transparent wallpaper pass-through optics.</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="perm-overlay" checked />
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+
+            <div class="permission-row">
+              <div>
+                <div class="field-label">System Action Confirmation</div>
+                <div class="field-desc">Require explicit user confirmation before executing host OS commands.</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="perm-confirm" checked />
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- TAB 5: ABOUT -->
+          <div class="settings-tab-panel" id="tab-about">
+            <div class="about-glass-box">
+              <header class="about-hero">
+                <div>
+                  <div class="about-eyebrow">Personal AI desktop assistant</div>
+                  <h4 class="about-title">About NEBIX</h4>
+                  <p class="about-copy">NEBIX brings AI conversations, voice interaction, and supported computer tasks together in one desktop assistant.</p>
+                </div>
+                <span class="about-version">Version 1.0.0.0</span>
+              </header>
+
+              <div class="about-summary-grid">
+                <section class="about-info-card" aria-labelledby="about-creator-title">
+                  <h4 class="about-info-title" id="about-creator-title">Created By</h4>
+                  <p class="about-info-copy">Nabeen Joshi</p>
+                </section>
+                <section class="about-info-card" aria-labelledby="about-purpose-title">
+                  <h4 class="about-info-title" id="about-purpose-title">Our Purpose</h4>
+                  <p class="about-info-copy">Our purpose is to make everyday computer use easier through natural conversation, voice, and supported desktop assistance.</p>
+                </section>
+              </div>
+
+              <section class="about-section" aria-labelledby="about-features-title">
+                <h4 class="about-section-title" id="about-features-title">Key Features</h4>
+                <div class="about-feature-grid">
+                  <div class="about-feature">AI-powered conversations</div>
+                  <div class="about-feature">Voice interaction</div>
+                  <div class="about-feature">Desktop assistance</div>
+                  <div class="about-feature">Computer Use</div>
+                  <div class="about-feature">Screen Vision</div>
+                  <div class="about-feature">Supported task automation</div>
+                  <div class="about-feature">Local memory</div>
+                  <div class="about-feature">Web search and file support</div>
+                </div>
+              </section>
+
+              <section class="about-section" aria-labelledby="about-capabilities-title">
+                <h4 class="about-section-title" id="about-capabilities-title">Capabilities</h4>
+                <div class="about-capabilities-grid">
+                  <div class="about-capability">
+                    <div class="about-capability-label">Implemented</div>
+                    <p class="about-capability-copy">Chat and Gemini Live voice; supported desktop and app actions; permission-controlled screen viewing; web search, reminders, and local memory; project scans and diagnostics; and the paired remote-control dashboard.</p>
+                  </div>
+                  <div class="about-capability">
+                    <div class="about-capability-label">Not available yet</div>
+                    <p class="about-capability-copy">Automatic project-code repair is not available in the current release.</p>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="quick-access-backdrop" role="dialog" aria-modal="true" aria-labelledby="quick-access-heading">
+    <div class="settings-glass-panel quick-access-panel">
+      <div class="settings-main-header">
+        <h3 id="quick-access-heading">Quick Access</h3>
+        <button class="modal-close-btn" id="close-quick-access-btn" title="Close">✕</button>
+      </div>
+      <div class="quick-access-content">
+        <div class="quick-access-toolbar">
+          <input class="glass-text-field" id="quick-access-search" type="search" placeholder="Search installed applications…" autocomplete="off" />
+          <button class="btn-ghost" id="refresh-applications-btn" type="button">Refresh</button>
+        </div>
+        <div class="quick-access-filters" role="group" aria-label="Application filters">
+          <button class="quick-access-filter active" type="button" data-app-filter="all">All</button>
+          <button class="quick-access-filter" type="button" data-app-filter="favorites">Favorites</button>
+          <button class="quick-access-filter" type="button" data-app-filter="recent">Recent</button>
+        </div>
+        <div class="quick-access-status" id="quick-access-status" role="status" aria-live="polite"></div>
+        <div class="quick-access-grid" id="quick-access-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       9. CORE ENGINE, HIGH-DPI 3D PLASMA SPHERE & SESSION CONTROLLER
+       ========================================================================== -->
+  <script>
+    (() => {
+      "use strict";
+
+      /* ------------------------------------------------------------------------
+         A. VOICE PROFILES & STRICT SESSION-ONLY IN-MEMORY LOG
+         ------------------------------------------------------------------------ */
+      const VOICE_PROFILES = [
+        { id: "Charon", name: "Charon", desc: "Deep, calm & authoritative", pitch: 0.82, rate: 0.96 },
+        { id: "Zephyr", name: "Zephyr", desc: "Bright, clear & energetic", pitch: 1.12, rate: 1.04 },
+        { id: "Puck",   name: "Puck",   desc: "Playful, lively & expressive", pitch: 1.18, rate: 1.06 },
+        { id: "Kore",   name: "Kore",   desc: "Soft, composed & articulate", pitch: 1.05, rate: 0.98 },
+        { id: "Fenrir", name: "Fenrir", desc: "Bold, direct & resonant", pitch: 0.76, rate: 0.95 },
+        { id: "Aoede",  name: "Aoede",  desc: "Melodic, warm & natural", pitch: 1.08, rate: 1.00 }
+      ];
+
+      // Activity is operational status, not a stored conversation transcript.
+      const activityLog = [];
+      const voiceSessionWaiters = new Set();
+      let commandSubmissionId = 0;
+      let voiceStartPending = false;
+
+      const state = {
+        mode: "STANDBY", // STANDBY | LISTENING | PROCESSING | SPEAKING
+        apiKeyConfigured: false,
+        bridgeAvailable: false,
+        backendConnected: false,
+        voiceSessionState: "DISCONNECTED",
+        voiceSessionMessage: "Gemini Live session has not connected.",
+        voiceInputEnabled: false,
+        selectedVoice: localStorage.getItem("nebix_voice") || "Charon",
+        attachments: [], // Array of { name, type, size, dataUrl }
+        wallpaperPreview: false,
+        pointerX: 0,
+        pointerY: 0,
+        permissions: JSON.parse(
+          localStorage.getItem("nebix_permissions") ||
+          '{"mic":true,"files":true,"computerUse":false,"screen":false,"network":true,"overlay":true,"confirm":true}'
+        )
+      };
+      const quickAccessState = {
+        applications: [],
+        favorites: [],
+        recent: [],
+        filter: "all",
+        icons: {},
+        iconsRequested: new Set(),
+        scanTimer: null
+      };
+
+      /* ------------------------------------------------------------------------
+         B. DOM ELEMENT CACHE
+         ------------------------------------------------------------------------ */
+      const el = {
+        wallpaperLayer: document.getElementById("wallpaper-preview-layer"),
+        toggleWallpaperBtn: document.getElementById("toggle-wallpaper-btn"),
+        wallpaperBtnLabel: document.getElementById("wallpaper-btn-label"),
+        frame: document.getElementById("nebix-frame"),
+        statusLed: document.getElementById("status-led"),
+        coreStatusText: document.getElementById("core-status-text"),
+        liveDate: document.getElementById("live-date-label"),
+        liveTime: document.getElementById("live-time-label"),
+        voiceBadgeLabel: document.getElementById("voice-badge-label"),
+        sessionCounterBadge: document.getElementById("session-counter-badge"),
+        attachmentsStrip: document.getElementById("attachments-strip"),
+        multiFileInput: document.getElementById("multi-file-input"),
+        attachFilesBtn: document.getElementById("attach-files-btn"),
+        dockAttachBtn: document.getElementById("dock-attach-btn"),
+        micToggleBtn: document.getElementById("mic-toggle-btn"),
+        commandInput: document.getElementById("command-text-input"),
+        sendBtn: document.getElementById("send-command-btn"),
+        responseOverlay: document.getElementById("response-overlay"),
+        responseBodyText: document.getElementById("response-body-text"),
+        dismissResponseBtn: document.getElementById("dismiss-response-btn"),
+        settingsBackdrop: document.getElementById("settings-backdrop"),
+        settingsHeading: document.getElementById("settings-heading"),
+        openSettingsBtn: document.getElementById("open-settings-btn"),
+        openLogQuickBtn: document.getElementById("open-log-quick-btn"),
+        sessionLogCard: document.getElementById("session-log-card"),
+        quickAccessBtn: document.getElementById("quick-access-btn"),
+        quickAccessBackdrop: document.getElementById("quick-access-backdrop"),
+        closeQuickAccessBtn: document.getElementById("close-quick-access-btn"),
+        quickAccessSearch: document.getElementById("quick-access-search"),
+        refreshApplicationsBtn: document.getElementById("refresh-applications-btn"),
+        quickAccessStatus: document.getElementById("quick-access-status"),
+        quickAccessGrid: document.getElementById("quick-access-grid"),
+        closeSettingsBtn: document.getElementById("close-settings-btn"),
+        apiKeyField: document.getElementById("api-key-field"),
+        apiConnectionBadge: document.getElementById("api-connection-badge"),
+        toggleKeyVisBtn: document.getElementById("toggle-key-vis-btn"),
+        saveKeyBtn: document.getElementById("save-key-btn"),
+        clearKeyBtn: document.getElementById("clear-key-btn"),
+        apiSaveStatus: document.getElementById("api-save-status"),
+        voicesGrid: document.getElementById("voices-grid"),
+        previewVoiceBtn: document.getElementById("preview-voice-btn"),
+        sessionLogStream: document.getElementById("session-log-stream"),
+        clearSessionBtn: document.getElementById("clear-session-btn"),
+        spectrumBars: Array.from(document.querySelectorAll("#spectrum-bars .spectrum-bar"))
+      };
+
+      /* ------------------------------------------------------------------------
+         C. CLOCK & DATE DISPLAY
+         ------------------------------------------------------------------------ */
+      function updateClock() {
+        const now = new Date();
+        el.liveDate.textContent = now.toLocaleDateString("en-US", {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+          year: "numeric"
+        });
+        el.liveTime.textContent = now.toLocaleTimeString("en-US", {
+          hour12: false,
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit"
+        });
+      }
+      updateClock();
+      setInterval(updateClock, 1000);
+
+      /* ------------------------------------------------------------------------
+         D. CORE STATE & UI SYNCHRONIZATION
+         ------------------------------------------------------------------------ */
+      function setCoreMode(nextMode) {
+        state.mode = nextMode;
+        el.coreStatusText.textContent = nextMode;
+
+        el.statusLed.classList.remove("listening", "thinking");
+        const micEnabled = Boolean(state.voiceInputEnabled);
+        el.micToggleBtn.classList.toggle("mic-active", micEnabled);
+        el.micToggleBtn.setAttribute("aria-pressed", String(micEnabled));
+        el.micToggleBtn.setAttribute(
+          "aria-label",
+          micEnabled ? "Pause voice input" : "Enable voice input"
+        );
+        el.micToggleBtn.title = micEnabled ? "Pause Voice Input" : "Enable Voice Input";
+
+        if (nextMode === "LISTENING" || nextMode === "SPEAKING") {
+          el.statusLed.classList.add("listening");
+        } else if (nextMode === "PROCESSING") {
+          el.statusLed.classList.add("thinking");
+        }
+
+      }
+
+      function applyVoiceSessionStatus(payload = {}) {
+        const sessionState = String(
+          payload.voiceSessionState || payload.voice_session_state || state.voiceSessionState
+        ).toUpperCase();
+        if (["DISCONNECTED", "CONNECTING", "CONNECTED", "RECONNECTING", "FAILED", "STOPPED"].includes(sessionState)) {
+          state.voiceSessionState = sessionState;
+        }
+        state.voiceSessionMessage = String(
+          payload.voiceSessionMessage || payload.voice_session_message || state.voiceSessionMessage || ""
+        );
+        if (typeof payload.connected === "boolean") {
+          state.backendConnected = payload.connected;
+        }
+        if (state.voiceSessionState !== "CONNECTED" || !state.backendConnected) {
+          state.voiceInputEnabled = false;
+        }
+
+        for (const waiter of [...voiceSessionWaiters]) {
+          if (state.voiceSessionState === "CONNECTED" && state.backendConnected) {
+            waiter.resolve();
+          } else if (state.voiceSessionState === "FAILED" || state.voiceSessionState === "STOPPED") {
+            waiter.reject(new Error(
+              state.voiceSessionMessage || `NEBIX voice session is ${state.voiceSessionState.toLowerCase()}.`
+            ));
+          }
+        }
+      }
+
+      function waitForVoiceSession(timeoutMs = 90000) {
+        if (state.voiceSessionState === "CONNECTED" && state.backendConnected) {
+          return Promise.resolve();
+        }
+        if (state.voiceSessionState === "FAILED" || state.voiceSessionState === "STOPPED") {
+          return Promise.reject(new Error(
+            state.voiceSessionMessage || `NEBIX voice session is ${state.voiceSessionState.toLowerCase()}.`
+          ));
+        }
+        return new Promise((resolve, reject) => {
+          const waiter = {
+            resolve: () => {
+              clearTimeout(waiter.timer);
+              voiceSessionWaiters.delete(waiter);
+              resolve();
+            },
+            reject: (error) => {
+              clearTimeout(waiter.timer);
+              voiceSessionWaiters.delete(waiter);
+              reject(error);
+            },
+            timer: setTimeout(() => {
+              waiter.reject(new Error(
+                `Timed out waiting for the Gemini Live session; current state is ${state.voiceSessionState}.`
+              ));
+            }, timeoutMs)
+          };
+          voiceSessionWaiters.add(waiter);
+          if (state.voiceSessionState === "CONNECTED" && state.backendConnected) {
+            waiter.resolve();
+          } else if (state.voiceSessionState === "FAILED" || state.voiceSessionState === "STOPPED") {
+            waiter.reject(new Error(
+              state.voiceSessionMessage || `NEBIX voice session is ${state.voiceSessionState.toLowerCase()}.`
+            ));
+          }
+        });
+      }
+
+      function syncSettingsUI() {
+        el.voiceBadgeLabel.textContent = state.selectedVoice.toUpperCase();
+        if (state.apiKeyConfigured) {
+          el.apiConnectionBadge.textContent = state.bridgeAvailable
+            ? state.voiceSessionState
+            : "Disconnected";
+          el.apiConnectionBadge.style.color = state.voiceSessionState === "CONNECTED"
+            ? "var(--success)"
+            : "var(--text-muted)";
+        } else {
+          el.apiConnectionBadge.textContent = state.bridgeAvailable
+            ? "Status: Not Configured"
+            : "Disconnected";
+          el.apiConnectionBadge.style.color = "var(--text-muted)";
+        }
+      }
+
+      function renderVoiceOptions() {
+        el.voicesGrid.innerHTML = "";
+        VOICE_PROFILES.forEach((v) => {
+          const card = document.createElement("div");
+          card.className = `voice-option-card ${state.selectedVoice === v.id ? "selected" : ""}`;
+          card.innerHTML = `
+            <div>
+              <div class="voice-title">${v.name}</div>
+              <div class="voice-meta">${v.desc}</div>
+            </div>
+            <div class="voice-dot"></div>
+          `;
+          card.addEventListener("click", async () => {
+            try {
+              const api = getBackendApi();
+              if (!api) throw new Error("NEBIX backend is not connected.");
+              const result = await api.set_voice(v.id);
+              if (!result || result.ok === false) {
+                throw new Error(result && result.error || "Voice setting could not be saved.");
+              }
+              state.selectedVoice = result.voice || v.id;
+              localStorage.setItem("nebix_voice", state.selectedVoice);
+              renderVoiceOptions();
+              syncSettingsUI();
+            } catch (error) {
+              showToast(`Voice setting failed: ${error.message || error}`);
+              recordLocalActivity("ERROR", `Voice setting failed: ${error.message || error}`);
+            }
+          });
+          el.voicesGrid.appendChild(card);
+        });
+      }
+
+      function escapeHtml(text) {
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      function renderSessionLog() {
+        const total = activityLog.length;
+        el.sessionCounterBadge.textContent = `${total} Event${total === 1 ? "" : "s"}`;
+
+        if (total === 0) {
+          el.sessionLogStream.innerHTML = `
+            <p class="field-desc" style="text-align:center; padding:26px 0;">
+              No backend activity has been recorded yet.
+            </p>
+          `;
+          return;
+        }
+
+        el.sessionLogStream.innerHTML = "";
+        [...activityLog].reverse().forEach((item) => {
+          const row = document.createElement("div");
+          row.className = "session-entry";
+          row.innerHTML = `
+            <div class="session-entry-header">
+              <span>${escapeHtml(item.time || "")}</span>
+              <span>${escapeHtml(item.type || "BACKEND")}</span>
+            </div>
+            <div class="entry-output">${escapeHtml(item.text || "")}</div>
+          `;
+          el.sessionLogStream.appendChild(row);
+        });
+      }
+
+      function recordLocalActivity(type, text, time = "") {
+        activityLog.push({
+          time: time || new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+          }),
+          type: String(type || "FRONTEND"),
+          text: String(text || "")
+        });
+        if (activityLog.length > 500) activityLog.splice(0, activityLog.length - 500);
+        renderSessionLog();
+      }
+
+      function getBackendApi() {
+        return window.pywebview && window.pywebview.api
+          ? window.pywebview.api
+          : null;
+      }
+
+      function recordActivity(text) {
+        const api = getBackendApi();
+        if (!api || typeof api.log_activity !== "function") return;
+        Promise.resolve(api.log_activity(String(text || ""))).then((result) => {
+          if (!result || result.ok === false) {
+            throw new Error(result && result.error || "NEBIX activity could not be recorded.");
+          }
+        }).catch((error) => {
+          console.error("NEBIX activity logging failed:", error);
+          recordLocalActivity("ERROR", `Activity logging failed: ${error.message || error}`);
+        });
+      }
+
+      async function refreshConnectionStatus() {
+        const api = getBackendApi();
+        if (!api || typeof api.status !== "function") return;
+        try {
+          const status = await api.status();
+          if (!status || status.ok === false) {
+            throw new Error(status && status.error || "NEBIX status is unavailable.");
+          }
+          state.bridgeAvailable = true;
+          applyVoiceSessionStatus(status);
+          state.apiKeyConfigured = Boolean(status.has_api_key);
+          syncSettingsUI();
+        } catch (error) {
+          state.bridgeAvailable = false;
+          applyVoiceSessionStatus({
+            connected: false,
+            voiceSessionState: "DISCONNECTED",
+            voiceSessionMessage: "NEBIX backend status is unavailable."
+          });
+          bridgeInitialization = null;
+          syncSettingsUI();
+          if (state.mode !== "PROCESSING") setCoreMode("DISCONNECTED");
+          console.error("NEBIX connection status request failed:", error);
+        }
+      }
+
+      function showToast(message) {
+        el.responseBodyText.textContent = message;
+        el.responseOverlay.classList.add("visible");
+      }
+
+      /* ------------------------------------------------------------------------
+         E. PYTHON SPEECH OUTPUT & LIVE VOICE CONTROL
+         ------------------------------------------------------------------------ */
+      function speakResponse(text) {
+        const api = getBackendApi();
+        if (!api || typeof api.speak_text !== "function") {
+          recordLocalActivity("ERROR", "Voice output unavailable: NEBIX backend is disconnected.");
+          return Promise.reject(new Error("NEBIX voice output is unavailable."));
+        }
+        return Promise.resolve(api.speak_text(String(text || ""), state.selectedVoice)).then((result) => {
+          if (!result || result.ok === false) {
+            throw new Error(result && result.error || "NEBIX voice output could not start.");
+          }
+          recordActivity("VOICE OUTPUT: Speech playback started.");
+          return result;
+        });
+      }
+
+      /* ------------------------------------------------------------------------
+         F. COMMAND SUBMISSION & BACKEND BRIDGE
+         ------------------------------------------------------------------------ */
+      async function submitCommand(customPrompt) {
+        const submissionId = ++commandSubmissionId;
+        const enteredText = typeof customPrompt === "string" ? customPrompt : el.commandInput.value;
+        const text = enteredText.trim();
+        const attachedSnapshot = [...state.attachments];
+
+        if (!text && attachedSnapshot.length === 0) return;
+        if (attachedSnapshot.some((file) => !file.dataUrl)) {
+          showToast("Wait for the selected files to finish loading before sending.");
+          return;
+        }
+        if (attachedSnapshot.reduce((sum, file) => sum + file.size, 0) > 16 * 1024 * 1024) {
+          showToast("Attachments must total 16 MB or less.");
+          return;
+        }
+        const api = getBackendApi();
+        if (!api || typeof api.send_command !== "function") {
+          showToast("NEBIX backend is disconnected. Reopen the desktop application and retry.");
+          recordLocalActivity("ERROR", "Command request failed: NEBIX backend is disconnected.");
+          return;
+        }
+
+        setCoreMode("PROCESSING");
+        recordActivity("You submitted a command.");
+
+        try {
+          const status = await api.status();
+          if (!status || status.ok === false) {
+            throw new Error(status && status.error || "Could not read NEBIX backend status.");
+          }
+          if (!status.activated) {
+            const activation = await api.activate();
+            if (!activation || activation.ok === false) {
+              throw new Error(activation && activation.error || "NEBIX could not be activated.");
+            }
+          }
+          // Keep file uploads on their existing attachment-aware route. Plain
+          // commands go directly to NEBIX's command/action processor.
+          let accepted;
+          if (attachedSnapshot.length) {
+            if (typeof api.send_chat !== "function") {
+              throw new Error("This NEBIX build cannot process file attachments.");
+            }
+            const backendAttachments = attachedSnapshot.map((file) => ({
+              name: file.name,
+              type: file.type,
+              data: file.dataUrl.slice(file.dataUrl.indexOf(",") + 1)
+            }));
+            accepted = await api.send_chat(text, backendAttachments, {});
+          } else {
+            accepted = await api.send_command(text);
+          }
+          if (!accepted || accepted.ok === false || accepted.accepted === false) {
+            throw new Error(accepted && accepted.error || "NEBIX did not accept the request.");
+          }
+          if (el.commandInput.value === enteredText) el.commandInput.value = "";
+          if (
+            attachedSnapshot.length
+            && attachedSnapshot.length === state.attachments.length
+            && attachedSnapshot.every((file, index) => file === state.attachments[index])
+          ) {
+            state.attachments = [];
+            renderAttachmentChips();
+          }
+          showToast("Command sent to NEBIX.");
+          if (enteredText.trim() && submissionId === commandSubmissionId) {
+            try {
+              await speakResponse(enteredText);
+            } catch (error) {
+              const message = error && error.message ? error.message : String(error);
+              showToast(`Command sent, but speech output failed: ${message}`);
+              recordActivity(`ERR: Voice output failed: ${message}`);
+            }
+          }
+        } catch (error) {
+          const message = error && error.message ? error.message : String(error);
+          showToast(`NEBIX request failed: ${message}`);
+          recordActivity(`ERR: Command request failed: ${message}`);
+          if (!state.voiceInputEnabled && submissionId === commandSubmissionId) {
+            setCoreMode("STANDBY");
+          }
+        }
+      }
+
+      const publicBridge = {
+        onUserMessage: (request) => submitCommand(request && request.text),
+        pushOutput(outputText, userPrompt = "") {
+          if (userPrompt) recordActivity("You submitted a voice command.");
+          showToast(outputText);
+          recordActivity("NEBIX generated a response.");
+          speakResponse(outputText).catch((error) => {
+            recordActivity(`ERR: Voice output failed: ${error.message || error}`);
+          });
+        },
+        getConfig() {
+          return {
+            voice: state.selectedVoice,
+            permissions: { ...state.permissions }
+          };
+        },
+        setState(payload = {}) {
+          applyVoiceSessionStatus(payload);
+          const currentState = String(payload.state || "").toUpperCase();
+          if (
+            currentState === "LISTENING"
+            && state.voiceSessionState === "CONNECTED"
+            && state.backendConnected
+          ) {
+            state.voiceInputEnabled = true;
+          } else if (currentState === "READY" || currentState === "STANDBY") {
+            state.voiceInputEnabled = false;
+          }
+          if (payload.voice && VOICE_PROFILES.some((voice) => voice.id === payload.voice)) {
+            state.selectedVoice = payload.voice;
+            localStorage.setItem("nebix_voice", payload.voice);
+            renderVoiceOptions();
+          }
+          const backendState = currentState || "READY";
+          setCoreMode(backendState === "THINKING" ? "PROCESSING" : backendState);
+          syncSettingsUI();
+        },
+        chatDelta(payload = {}) {
+          if (payload.text) showToast(payload.text);
+        },
+        chatMessage(payload = {}) {
+          const role = String(payload.role || "assistant").toLowerCase();
+          const text = String(payload.text || "").trim();
+          if (!text) return;
+
+          if (role === "user") {
+            showToast(text);
+            return;
+          }
+          if (role === "error") {
+            showToast(`NEBIX error: ${text}`);
+            recordLocalActivity("ERROR", text);
+            return;
+          }
+
+          showToast(text);
+          recordActivity("NEBIX generated a response.");
+        },
+        addActivity(entry = {}) {
+          if (typeof entry === "string") {
+            recordLocalActivity("BACKEND", entry);
+            return;
+          }
+          const text = String(entry.text || "");
+          const match = text.match(/^\s*(ERR|ERROR|VOICE|You|NEBIX|SYS|COMMAND|ACTION|BACKEND)\b/i);
+          const type = match ? match[1].toUpperCase() : "BACKEND";
+          recordLocalActivity(type, text, entry.time);
+        },
+        restoreActivity(entries = []) {
+          activityLog.length = 0;
+          entries.forEach((entry) => {
+            const text = String(entry && entry.text || "");
+            const match = text.match(/^\s*(ERR|ERROR|VOICE|You|NEBIX|SYS|COMMAND|ACTION|BACKEND)\b/i);
+            activityLog.push({
+              time: String(entry && entry.time || ""),
+              type: match ? match[1].toUpperCase() : "BACKEND",
+              text
+            });
+          });
+          if (activityLog.length > 500) activityLog.splice(0, activityLog.length - 500);
+          renderSessionLog();
+        },
+        clearActivity() {
+          activityLog.length = 0;
+          renderSessionLog();
+        },
+        setResponse(text) {
+          if (text) showToast(String(text));
+        },
+        setAudioLevel(level) {
+          const normalized = Math.max(0, Math.min(1, Number(level) || 0));
+          el.spectrumBars.forEach((bar, index) => {
+            const variation = 0.65 + ((index % 3) * 0.12);
+            bar.style.height = `${Math.max(4, Math.round(4 + normalized * 32 * variation))}px`;
+          });
+        },
+      };
+      window.NEBIX = publicBridge;
+      window.NEBIX_BRIDGE = publicBridge;
+
+      /* ------------------------------------------------------------------------
+         G. MULTI-FILE & IMAGE ATTACHMENT CHIPS
+         ------------------------------------------------------------------------ */
+      function renderAttachmentChips() {
+        el.attachmentsStrip.innerHTML = "";
+        if (state.attachments.length === 0) {
+          el.attachmentsStrip.classList.remove("has-items");
+          return;
+        }
+        el.attachmentsStrip.classList.add("has-items");
+        state.attachments.forEach((item, idx) => {
+          const chip = document.createElement("div");
+          chip.className = "file-chip";
+          const thumbHtml = item.type.startsWith("image/") && item.dataUrl
+            ? `<img src="${item.dataUrl}" alt="preview" />`
+            : "";
+          chip.innerHTML = `
+            ${thumbHtml}
+            <span>${escapeHtml(item.name)}</span>
+            <button type="button" title="Remove">×</button>
+          `;
+          chip.querySelector("button").addEventListener("click", () => {
+            state.attachments.splice(idx, 1);
+            renderAttachmentChips();
+          });
+          el.attachmentsStrip.appendChild(chip);
+        });
+      }
+
+      function openFileDialog() {
+        if (!state.permissions.files) {
+          showToast("File & Vision Access is disabled in Permissions.");
+          recordLocalActivity("ERROR", "File upload blocked by NEBIX Permissions.");
+          return;
+        }
+        el.multiFileInput.click();
+      }
+
+      el.attachFilesBtn.addEventListener("click", openFileDialog);
+      el.dockAttachBtn.addEventListener("click", openFileDialog);
+
+      const MIME_BY_EXTENSION = {
+        png: "image/png",
+        jpg: "image/jpeg",
+        jpeg: "image/jpeg",
+        webp: "image/webp",
+        pdf: "application/pdf",
+        txt: "text/plain",
+        json: "application/json",
+        csv: "text/csv"
+      };
+
+      el.multiFileInput.addEventListener("change", (e) => {
+        const files = Array.from(e.target.files || []);
+        files.forEach((file) => {
+          const extension = file.name.split(".").pop().toLowerCase();
+          const type = MIME_BY_EXTENSION[extension];
+          if (!type) {
+            showToast(`${file.name} is not supported. Use PNG, JPG, WEBP, PDF, TXT, CSV, or JSON.`);
+            recordLocalActivity("ERROR", `Unsupported attachment type: ${file.name}`);
+            return;
+          }
+          if (file.size < 1 || file.size > 6 * 1024 * 1024) {
+            showToast(`${file.name} must be between 1 byte and 6 MB.`);
+            recordLocalActivity("ERROR", `Attachment size rejected: ${file.name}`);
+            return;
+          }
+          const totalSize = state.attachments.reduce((sum, item) => sum + item.size, 0) + file.size;
+          if (totalSize > 16 * 1024 * 1024) {
+            showToast("Attachments must total 16 MB or less.");
+            recordLocalActivity("ERROR", `Attachment total size exceeded by ${file.name}.`);
+            return;
+          }
+          const entry = { name: file.name, type, size: file.size, dataUrl: null };
+          state.attachments.push(entry);
+          const reader = new FileReader();
+          reader.onload = () => {
+            entry.dataUrl = reader.result;
+            renderAttachmentChips();
+          };
+          reader.onerror = () => {
+            state.attachments = state.attachments.filter((item) => item !== entry);
+            renderAttachmentChips();
+            showToast(`Could not read ${file.name}.`);
+            recordLocalActivity("ERROR", `File read failed: ${file.name}`);
+          };
+          reader.readAsDataURL(file);
+        });
+        renderAttachmentChips();
+        el.multiFileInput.value = "";
+        el.commandInput.focus();
+      });
+
+      /* ------------------------------------------------------------------------
+         H. INTERACTIVE CONTROLS, LIVE VOICE INPUT & WALLPAPER PREVIEW TOGGLE
+         ------------------------------------------------------------------------ */
+      el.toggleWallpaperBtn.addEventListener("click", () => {
+        state.wallpaperPreview = !state.wallpaperPreview;
+        el.wallpaperLayer.classList.toggle("active", state.wallpaperPreview);
+        el.toggleWallpaperBtn.classList.toggle("active", state.wallpaperPreview);
+        el.wallpaperBtnLabel.textContent = state.wallpaperPreview ? "Switch" : "Switch";
+      });
+
+      el.sendBtn.addEventListener("click", () => submitCommand());
+
+      el.commandInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          submitCommand();
+        }
+      });
+
+      el.dismissResponseBtn.addEventListener("click", () => {
+        el.responseOverlay.classList.remove("visible");
+      });
+
+      async function toggleListening() {
+        if (voiceStartPending) return;
+        if (!state.permissions.mic) {
+          showToast("Microphone Access is disabled in Permissions.");
+          recordActivity("ERR: Microphone input blocked by NEBIX Permissions.");
+          return;
+        }
+        const api = getBackendApi();
+        if (!api) {
+          showToast("NEBIX backend is disconnected; microphone input is unavailable.");
+          recordLocalActivity("ERROR", "Voice input failed: NEBIX backend is disconnected.");
+          return;
+        }
+        try {
+          if (state.voiceInputEnabled) {
+            const result = await api.set_mode("chat");
+            if (!result || result.ok === false) {
+              throw new Error(result && result.error || "Could not stop voice input.");
+            }
+            state.voiceInputEnabled = false;
+            setCoreMode("READY");
+            recordActivity("VOICE INPUT: Microphone forwarding paused.");
+          } else {
+            voiceStartPending = true;
+            const settings = await api.get_settings();
+            const permissions = settings && settings.permissions || {};
+            if (!permissions.microphone_access) {
+              throw new Error("Microphone Access is disabled in NEBIX Permissions.");
+            }
+            if (!permissions.network_access) {
+              throw new Error("Network Access is disabled in NEBIX Permissions.");
+            }
+            const status = await api.status();
+            if (!status || status.ok === false) {
+              throw new Error(status && status.error || "Could not read NEBIX backend status.");
+            }
+            applyVoiceSessionStatus(status);
+            state.apiKeyConfigured = Boolean(status.has_api_key);
+            syncSettingsUI();
+            if (!status.has_api_key) {
+              throw new Error("A Gemini API key is required to start voice input.");
+            }
+            if (!status.activated) {
+              const activation = await api.activate();
+              if (!activation || activation.ok === false) {
+                throw new Error(activation && activation.error || "NEBIX could not be activated.");
+              }
+            }
+            await waitForVoiceSession();
+            const result = await api.set_mode("voice");
+            if (!result || result.ok === false) {
+              throw new Error(result && result.error || "Could not start voice input.");
+            }
+            state.voiceInputEnabled = true;
+            setCoreMode("LISTENING");
+            recordActivity("VOICE INPUT: Microphone forwarding enabled.");
+          }
+        } catch (error) {
+          state.voiceInputEnabled = false;
+          setCoreMode(state.backendConnected ? "READY" : state.voiceSessionState);
+          showToast(`Voice input failed: ${error.message || error}`);
+          recordActivity(`ERR: Voice input failed: ${error.message || error}`);
+        } finally {
+          voiceStartPending = false;
+        }
+      }
+
+      el.micToggleBtn.addEventListener("click", toggleListening);
+
+      /* ------------------------------------------------------------------------
+         I. SETTINGS MODAL LOGIC
+         ------------------------------------------------------------------------ */
+      const HEADING_MAP = {
+        apikey: "API Key Configuration",
+        voice: "Voice Selection",
+        activity: "Activity Log",
+        permissions: "System & Permissions",
+        about: "About NEBIX"
+      };
+
+      function openModal(tabName = "apikey") {
+        el.settingsBackdrop.classList.add("open");
+        activateTab(tabName);
+      }
+
+      function closeModal() {
+        el.settingsBackdrop.classList.remove("open");
+      }
+
+      function activateTab(tabName) {
+        document.querySelectorAll(".nav-tab-btn").forEach((b) => {
+          b.classList.toggle("active", b.getAttribute("data-tab") === tabName);
+        });
+        document.querySelectorAll(".settings-tab-panel").forEach((p) => {
+          p.classList.toggle("active", p.id === `tab-${tabName}`);
+        });
+        el.settingsHeading.textContent = HEADING_MAP[tabName] || "Settings";
+        if (tabName === "activity") renderSessionLog();
+      }
+
+      function closeQuickAccess() {
+        el.quickAccessBackdrop.classList.remove("open");
+        if (quickAccessState.scanTimer) clearTimeout(quickAccessState.scanTimer);
+        quickAccessState.scanTimer = null;
+      }
+
+      function renderQuickAccess() {
+        const query = el.quickAccessSearch.value.trim().toLocaleLowerCase();
+        const favorites = new Set(quickAccessState.favorites);
+        let applications = quickAccessState.applications;
+        if (quickAccessState.filter === "favorites") {
+          applications = quickAccessState.favorites
+            .map((id) => quickAccessState.applications.find((app) => app.id === id))
+            .filter(Boolean);
+        } else if (quickAccessState.filter === "recent") {
+          applications = quickAccessState.recent
+            .map((id) => quickAccessState.applications.find((app) => app.id === id))
+            .filter(Boolean);
+        }
+        if (query) applications = applications.filter((app) => app.name.toLocaleLowerCase().includes(query));
+
+        el.quickAccessGrid.replaceChildren();
+        applications.forEach((app) => {
+          const card = document.createElement("div");
+          card.className = "quick-access-app";
+
+          const launch = document.createElement("button");
+          launch.type = "button";
+          launch.className = "quick-access-launch";
+          launch.title = `Open ${app.name}`;
+
+          const icon = document.createElement("span");
+          icon.className = "quick-access-icon";
+          const iconSource = quickAccessState.icons[app.id] || app.icon;
+          if (iconSource) {
+            const image = document.createElement("img");
+            image.alt = "";
+            image.src = iconSource;
+            icon.appendChild(image);
+          } else {
+            icon.textContent = app.name.split(/\s+/).slice(0, 2).map((part) => part[0] || "").join("").toUpperCase();
+          }
+
+          const name = document.createElement("span");
+          name.className = "quick-access-name";
+          name.textContent = app.name;
+          launch.append(icon, name);
+          launch.addEventListener("click", () => launchQuickAccessApp(app));
+
+          const pin = document.createElement("button");
+          pin.type = "button";
+          pin.className = `quick-access-pin${favorites.has(app.id) ? " active" : ""}`;
+          pin.textContent = favorites.has(app.id) ? "★" : "☆";
+          pin.title = favorites.has(app.id) ? "Remove from Favorites" : "Add to Favorites";
+          pin.setAttribute("aria-label", pin.title);
+          pin.addEventListener("click", () => toggleQuickAccessFavorite(app.id));
+
+          card.append(launch, pin);
+          el.quickAccessGrid.appendChild(card);
+        });
+
+        if (!applications.length && quickAccessState.applications.length) {
+          const empty = document.createElement("p");
+          empty.className = "field-desc";
+          empty.textContent = query
+            ? "No installed applications match this search."
+            : quickAccessState.filter === "favorites"
+              ? "Pin applications to add them to Favorites."
+              : "No recently opened applications yet.";
+          el.quickAccessGrid.appendChild(empty);
+        }
+
+        const api = getBackendApi();
+        const iconIds = applications.slice(0, 64)
+          .map((app) => app.id)
+          .filter((id) => !quickAccessState.icons[id] && !quickAccessState.iconsRequested.has(id));
+        if (api && iconIds.length && typeof api.get_application_icons === "function") {
+          iconIds.forEach((id) => quickAccessState.iconsRequested.add(id));
+          Promise.resolve(api.get_application_icons(iconIds)).then((result) => {
+            if (!result || result.ok === false || !result.icons) return;
+            Object.assign(quickAccessState.icons, result.icons);
+            const iconApps = new Map(quickAccessState.applications.map((app) => [app.id, app]));
+            Object.entries(result.icons).forEach(([id, iconValue]) => {
+              const app = iconApps.get(id);
+              if (app) app.icon = iconValue;
+            });
+            renderQuickAccess();
+          }).catch((error) => console.error("NEBIX app icons could not be loaded:", error));
+        }
+      }
+
+      async function loadQuickAccess(forceRefresh = false) {
+        const api = getBackendApi();
+        if (!api || typeof api.get_applications !== "function") {
+          el.quickAccessStatus.textContent = "NEBIX application discovery is unavailable.";
+          return;
+        }
+        try {
+          const result = await api.get_applications(Boolean(forceRefresh));
+          if (!result || result.ok === false) throw new Error(result && result.error || "Could not discover installed applications.");
+          quickAccessState.applications = Array.isArray(result.applications) ? result.applications : [];
+          if (typeof api.get_settings === "function") {
+            const settings = await api.get_settings();
+            const quickAccess = settings && settings.quickAccess || {};
+            quickAccessState.favorites = Array.isArray(quickAccess.favorites) ? quickAccess.favorites : [];
+            quickAccessState.recent = Array.isArray(quickAccess.recent) ? quickAccess.recent : [];
+          }
+          const countText = `${result.count || 0} installed application${result.count === 1 ? "" : "s"}`;
+          el.quickAccessStatus.textContent = result.scanning
+            ? `Scanning installed applications… ${countText} found so far.`
+            : result.error || `${countText} found • ${result.duplicates_removed || 0} duplicates removed.`;
+          renderQuickAccess();
+          if (result.scanning && el.quickAccessBackdrop.classList.contains("open")) {
+            if (quickAccessState.scanTimer) clearTimeout(quickAccessState.scanTimer);
+            quickAccessState.scanTimer = setTimeout(() => loadQuickAccess(false), 900);
+          } else {
+            quickAccessState.scanTimer = null;
+          }
+        } catch (error) {
+          el.quickAccessStatus.textContent = error.message || String(error);
+        }
+      }
+
+      async function toggleQuickAccessFavorite(applicationId) {
+        const wasPinned = quickAccessState.favorites.includes(applicationId);
+        const previous = [...quickAccessState.favorites];
+        quickAccessState.favorites = wasPinned
+          ? previous.filter((id) => id !== applicationId)
+          : [...previous, applicationId].slice(-500);
+        renderQuickAccess();
+        const api = getBackendApi();
+        try {
+          const result = await api.set_settings({
+            quickAccess: { favorites: quickAccessState.favorites, recent: quickAccessState.recent }
+          });
+          if (!result || result.ok === false) throw new Error(result && result.error || "Favorite could not be saved.");
+        } catch (error) {
+          quickAccessState.favorites = previous;
+          renderQuickAccess();
+          showToast(`Quick Access favorite could not be saved: ${error.message || error}`);
+        }
+      }
+
+      async function launchQuickAccessApp(app) {
+        const api = getBackendApi();
+        if (!api || typeof api.launch_application !== "function") {
+          showToast("NEBIX application launching is unavailable.");
+          return;
+        }
+        try {
+          const result = await api.launch_application(app.id);
+          if (!result || result.ok === false) throw new Error(result && result.error || "The application could not be opened.");
+          quickAccessState.recent = [app.id, ...quickAccessState.recent.filter((id) => id !== app.id)].slice(0, 32);
+          el.quickAccessStatus.textContent = result.persistence_warning || `Opening ${result.name}…`;
+          if (quickAccessState.filter === "recent") renderQuickAccess();
+        } catch (error) {
+          showToast(`Could not open ${app.name}: ${error.message || error}`);
+        }
+      }
+
+      function openQuickAccess() {
+        el.quickAccessBackdrop.classList.add("open");
+        loadQuickAccess(false);
+        el.quickAccessSearch.focus();
+      }
+
+      el.quickAccessBtn.addEventListener("click", openQuickAccess);
+      el.closeQuickAccessBtn.addEventListener("click", closeQuickAccess);
+      el.quickAccessBackdrop.addEventListener("click", (event) => {
+        if (event.target === el.quickAccessBackdrop) closeQuickAccess();
+      });
+      el.refreshApplicationsBtn.addEventListener("click", () => {
+        quickAccessState.iconsRequested.clear();
+        loadQuickAccess(true);
+      });
+      el.quickAccessSearch.addEventListener("input", renderQuickAccess);
+      document.querySelectorAll(".quick-access-filter").forEach((button) => {
+        button.addEventListener("click", () => {
+          quickAccessState.filter = button.dataset.appFilter || "all";
+          document.querySelectorAll(".quick-access-filter").forEach((filter) => {
+            filter.classList.toggle("active", filter === button);
+          });
+          renderQuickAccess();
+        });
+      });
+
+      el.openSettingsBtn.addEventListener("click", () => openModal("apikey"));
+      el.openLogQuickBtn.addEventListener("click", () => openModal("activity"));
+      el.sessionLogCard.addEventListener("click", () => openModal("activity"));
+      el.closeSettingsBtn.addEventListener("click", closeModal);
+
+      el.settingsBackdrop.addEventListener("click", (e) => {
+        if (e.target === el.settingsBackdrop) closeModal();
+      });
+
+      document.querySelectorAll(".nav-tab-btn").forEach((btn) => {
+        btn.addEventListener("click", () => activateTab(btn.getAttribute("data-tab")));
+      });
+
+      document.querySelectorAll(".dock-item[data-open-tab]").forEach((btn) => {
+        btn.addEventListener("click", () => openModal(btn.getAttribute("data-open-tab")));
+      });
+
+      // API Key Actions
+      el.toggleKeyVisBtn.addEventListener("click", () => {
+        const isMasked = el.apiKeyField.type === "password";
+        el.apiKeyField.type = isMasked ? "text" : "password";
+        el.toggleKeyVisBtn.textContent = isMasked ? "Hide" : "Show";
+      });
+
+      el.saveKeyBtn.addEventListener("click", () => {
+        const key = el.apiKeyField.value.trim();
+        if (!key) {
+          el.apiSaveStatus.textContent = "Enter a Gemini API key.";
+          return;
+        }
+        const api = getBackendApi();
+        if (!api) {
+          el.apiSaveStatus.textContent = "NEBIX backend is disconnected.";
+          return;
+        }
+        Promise.resolve(api.set_api_key(key)).then((result) => {
+          if (!result || result.ok === false) {
+            throw new Error(result && result.error || "Gemini API key could not be saved.");
+          }
+          state.apiKeyConfigured = true;
+          el.apiKeyField.value = "";
+          syncSettingsUI();
+          el.apiSaveStatus.textContent = "Gemini API key saved in NEBIX.";
+          recordActivity("Gemini API key configuration updated.");
+        }).catch((error) => {
+          el.apiSaveStatus.textContent = `Save failed: ${error.message || error}`;
+          recordActivity(`ERR: Gemini API key save failed: ${error.message || error}`);
+        });
+      });
+
+      el.clearKeyBtn.addEventListener("click", () => {
+        const api = getBackendApi();
+        if (!api) {
+          el.apiSaveStatus.textContent = "NEBIX backend is disconnected.";
+          return;
+        }
+        Promise.resolve(api.remove_api_key()).then((result) => {
+          if (!result || result.ok === false) {
+            throw new Error(result && result.error || "Gemini API key could not be removed.");
+          }
+          state.apiKeyConfigured = false;
+          el.apiKeyField.value = "";
+          syncSettingsUI();
+          el.apiSaveStatus.textContent = "Gemini API key removed from NEBIX.";
+          recordActivity("Gemini API key configuration removed.");
+        }).catch((error) => {
+          el.apiSaveStatus.textContent = `Remove failed: ${error.message || error}`;
+          recordActivity(`ERR: Gemini API key removal failed: ${error.message || error}`);
+        });
+      });
+
+      // Voice Preview
+      el.previewVoiceBtn.addEventListener("click", () => {
+        speakResponse(`NEBIX voice profile ${state.selectedVoice} is active and ready.`).catch((error) => {
+          showToast(`Voice preview failed: ${error.message || error}`);
+        });
+      });
+
+      // Clear Session Log
+      el.clearSessionBtn.addEventListener("click", () => {
+        const api = getBackendApi();
+        if (!api || typeof api.clear_activity !== "function") {
+          showToast("NEBIX backend is disconnected; activity could not be cleared.");
+          return;
+        }
+        Promise.resolve(api.clear_activity()).then((result) => {
+          if (!result || result.ok === false) {
+            throw new Error(result && result.error || "Backend activity could not be cleared.");
+          }
+          activityLog.length = 0;
+          renderSessionLog();
+        }).catch((error) => {
+          showToast(`Could not clear activity: ${error.message || error}`);
+        });
+      });
+
+      // Permissions Toggles
+      const permInputs = {
+        mic: document.getElementById("perm-mic"),
+        files: document.getElementById("perm-files"),
+        computerUse: document.getElementById("perm-computer-use"),
+        overlay: document.getElementById("perm-overlay"),
+        confirm: document.getElementById("perm-confirm"),
+        screen: document.getElementById("perm-screen-observation"),
+        network: document.getElementById("perm-network-access")
+      };
+
+      Object.keys(permInputs).forEach((k) => {
+        permInputs[k].checked = Boolean(state.permissions[k]);
+        permInputs[k].addEventListener("change", async () => {
+          const previous = !permInputs[k].checked;
+          state.permissions[k] = permInputs[k].checked;
+          if (k === "overlay" && !state.permissions.overlay) {
+            el.frame.style.transform = "none";
+          }
+          const updates = k === "mic"
+            ? { permissions: { microphone_access: state.permissions.mic } }
+            : k === "files"
+              ? { permissions: { uploads: state.permissions.files } }
+              : k === "computerUse"
+                ? { permissions: { computer_use: state.permissions.computerUse } }
+              : k === "screen"
+                ? { permissions: { screen_observation: state.permissions.screen } }
+                : k === "network"
+                  ? { permissions: { network_access: state.permissions.network } }
+                  : k === "confirm"
+                    ? { confirmSensitive: state.permissions.confirm }
+                    : null;
+          try {
+            const api = getBackendApi();
+            if (updates) {
+              if (!api) throw new Error("NEBIX backend is disconnected.");
+              const result = await api.set_settings(updates);
+              if (!result || result.ok === false) {
+                throw new Error(result && result.error || "Permission setting could not be saved.");
+              }
+            }
+            localStorage.setItem("nebix_permissions", JSON.stringify(state.permissions));
+            if (updates) recordActivity(`Permission ${k} ${state.permissions[k] ? "enabled" : "disabled"}.`);
+          } catch (error) {
+            state.permissions[k] = previous;
+            permInputs[k].checked = previous;
+            showToast(`Permission setting failed: ${error.message || error}`);
+            recordLocalActivity("ERROR", `Permission setting failed: ${error.message || error}`);
+          }
+        });
+      });
+
+      let bridgeInitialization = null;
+      let bridgeErrorMessage = "";
+      async function initializeBackend() {
+          const api = getBackendApi();
+          if (!api || bridgeInitialization) return bridgeInitialization;
+          bridgeInitialization = (async () => {
+            try {
+              const ready = await api.ready();
+              if (!ready || ready.ok === false) {
+                throw new Error(ready && ready.error || "NEBIX bridge did not become ready.");
+              }
+              bridgeErrorMessage = "";
+              state.bridgeAvailable = true;
+              const [status, settings, activity] = await Promise.all([
+                api.status(),
+                api.get_settings(),
+                api.get_activity()
+              ]);
+              if (status && status.ok === false) {
+                throw new Error(status.error || "Could not read NEBIX status.");
+              }
+              state.apiKeyConfigured = Boolean(status && status.has_api_key);
+              state.backendConnected = Boolean(status && status.connected);
+              if (settings && settings.voice && VOICE_PROFILES.some((voice) => voice.id === settings.voice)) {
+                state.selectedVoice = settings.voice;
+                localStorage.setItem("nebix_voice", settings.voice);
+              }
+              if (settings && settings.permissions) {
+                state.permissions.mic = Boolean(settings.permissions.microphone_access);
+                state.permissions.files = Boolean(settings.permissions.uploads);
+                state.permissions.computerUse = Boolean(settings.permissions.computer_use);
+                state.permissions.screen = Boolean(settings.permissions.screen_observation);
+                state.permissions.network = Boolean(settings.permissions.network_access);
+              }
+              if (settings && typeof settings.confirmSensitive === "boolean") {
+                state.permissions.confirm = settings.confirmSensitive;
+              }
+              Object.keys(permInputs).forEach((key) => {
+                permInputs[key].checked = Boolean(state.permissions[key]);
+              });
+              localStorage.setItem("nebix_permissions", JSON.stringify(state.permissions));
+              renderVoiceOptions();
+              syncSettingsUI();
+              publicBridge.setState({
+                state: status && status.state,
+                connected: status && status.connected,
+                voiceSessionState: status && status.voice_session_state,
+                voiceSessionMessage: status && status.voice_session_message,
+                voice: status && status.voice
+              });
+              publicBridge.restoreActivity(Array.isArray(activity) ? activity : []);
+              recordActivity("NEBIX frontend connected to the Python backend.");
+              return true;
+            } catch (error) {
+              bridgeInitialization = null;
+              state.bridgeAvailable = false;
+              applyVoiceSessionStatus({
+                connected: false,
+                voiceSessionState: "DISCONNECTED",
+                voiceSessionMessage: error.message || String(error)
+              });
+              syncSettingsUI();
+              if (bridgeErrorMessage !== (error.message || String(error))) {
+                bridgeErrorMessage = error.message || String(error);
+                showToast(`Backend connection failed: ${bridgeErrorMessage}`);
+                recordLocalActivity("ERROR", `Backend connection failed: ${bridgeErrorMessage}`);
+              }
+              return false;
+            }
+          })();
+          return bridgeInitialization;
+      }
+
+      window.addEventListener("pywebviewready", initializeBackend);
+      window.addEventListener("online", initializeBackend);
+      if (getBackendApi()) initializeBackend();
+      setInterval(() => {
+          if (!state.bridgeAvailable && getBackendApi()) initializeBackend();
+          refreshConnectionStatus();
+      }, 10000);
+
+      // Global Keyboard Shortcuts
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && el.settingsBackdrop.classList.contains("open")) {
+          closeModal();
+        }
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+          e.preventDefault();
+          el.commandInput.focus();
+        }
+      });
+
+      /* ------------------------------------------------------------------------
+         J. PHOTOREALISTIC 3D ENERGY SPHERE & VOLUMETRIC SILK-LIGHT RIBBONS
+         ------------------------------------------------------------------------ */
+      const canvas = document.getElementById("nebix-core-canvas");
+      const ctx = canvas.getContext("2d");
+      let cw = 0;
+      let ch = 0;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        cw = rect.width;
+        ch = rect.height;
+        canvas.width = Math.floor(cw * dpr);
+        canvas.height = Math.floor(ch * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+
+      // Subtle Cursor Parallax for 3D Liquid-Glass Depth
+      window.addEventListener("mousemove", (e) => {
+        const nx = (e.clientX / window.innerWidth - 0.5) * 2;
+        const ny = (e.clientY / window.innerHeight - 0.5) * 2;
+        state.pointerX = nx;
+        state.pointerY = ny;
+
+        if (state.permissions.overlay) {
+          el.frame.style.transform = `perspective(1800px) rotateY(${nx * 1.1}deg) rotateX(${-ny * 0.9}deg)`;
+        }
+      });
+
+      // Click directly on the 3D Energy Sphere to toggle voice input
+      canvas.addEventListener("click", (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+        const dist = Math.hypot(mx - cw * 0.5, my - ch * 0.5);
+        const radius = Math.min(cw, ch) * 0.25;
+        if (dist <= radius) {
+          toggleListening();
+        }
+      });
+
+      // Micro-stardust particles drifting along the plasma stream
+      const stardust = Array.from({ length: 64 }, () => ({
+        u: Math.random(),
+        v: (Math.random() - 0.5) * 2,
+        size: Math.random() * 1.6 + 0.35,
+        speed: Math.random() * 0.00045 + 0.00012,
+        isGold: Math.random() > 0.62,
+        phase: Math.random() * Math.PI * 2
+      }));
+
+      let time = 0;
+      let coreAnimationFrame = 0;
+      let lastCoreFrameTime = 0;
+      const CORE_FRAME_INTERVAL_MS = 1000 / 30;
+      const CORE_BASE_FRAME_MS = 1000 / 60;
+
+      const backRibbons = [
+        { amp: 46, freq: 3.4, speed: 0.9, phase: 0.2, width: 14, colorOuter: "rgba(0, 180, 216, 0.06)", colorCore: "rgba(56, 242, 255, 0.16)" },
+        { amp: 38, freq: 4.1, speed: -0.75, phase: 1.8, width: 11, colorOuter: "rgba(244, 162, 97, 0.06)", colorCore: "rgba(255, 209, 102, 0.16)" },
+        { amp: 28, freq: 5.2, speed: 1.1, phase: 3.1, width: 2.2, colorOuter: "rgba(56, 242, 255, 0.12)", colorCore: "rgba(180, 250, 255, 0.45)" },
+        { amp: 24, freq: 4.7, speed: -1.0, phase: 4.4, width: 1.8, colorOuter: "rgba(255, 209, 102, 0.12)", colorCore: "rgba(255, 232, 168, 0.42)" }
+      ];
+      const frontRibbons = [
+        { amp: 32, freq: 3.8, speed: 1.25, phase: 0.9, width: 2.0, colorOuter: "rgba(56, 242, 255, 0.05)", colorCore: "rgba(210, 253, 255, 0.62)" },
+        { amp: 26, freq: 4.5, speed: -1.15, phase: 2.4, width: 1.7, colorOuter: "rgba(255, 209, 102, 0.05)", colorCore: "rgba(255, 230, 165, 0.56)" }
+      ];
+
+      function drawSilkRibbon(cx, cy, orbR, cfg, energy) {
+        const steps = 160;
+        const spanW = cw * 0.96;
+        const startX = cx - spanW * 0.5;
+
+        ctx.beginPath();
+        for (let i = 0; i <= steps; i++) {
+          const t = i / steps;
+          const x = startX + t * spanW;
+          const relX = (x - cx) / (spanW * 0.5); // -1 to 1
+
+          // Taper smoothly at outer edges and swell around the central sphere
+          const edgeFade = Math.sin(t * Math.PI);
+          const centerFocus = Math.exp(-relX * relX * 1.45);
+
+          const wave1 = Math.sin(relX * cfg.freq + time * cfg.speed + cfg.phase);
+          const wave2 = Math.cos(relX * (cfg.freq * 1.65) - time * (cfg.speed * 0.72) + cfg.phase * 0.5);
+          const y =
+            cy +
+            (wave1 * cfg.amp + wave2 * (cfg.amp * 0.42)) *
+              (0.28 * edgeFade + 0.85 * centerFocus) *
+              energy;
+
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+
+        const grad = ctx.createLinearGradient(startX, cy, startX + spanW, cy);
+        grad.addColorStop(0.0, "rgba(0,0,0,0)");
+        grad.addColorStop(0.18, cfg.colorOuter);
+        grad.addColorStop(0.5, cfg.colorCore);
+        grad.addColorStop(0.82, cfg.colorOuter);
+        grad.addColorStop(1.0, "rgba(0,0,0,0)");
+
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = cfg.width;
+        ctx.stroke();
+      }
+
+      function renderCoreLoop(timestamp) {
+        coreAnimationFrame = 0;
+        if (document.hidden) return;
+
+        const elapsedMs = lastCoreFrameTime
+          ? timestamp - lastCoreFrameTime
+          : CORE_BASE_FRAME_MS;
+        if (lastCoreFrameTime && elapsedMs < CORE_FRAME_INTERVAL_MS) {
+          coreAnimationFrame = requestAnimationFrame(renderCoreLoop);
+          return;
+        }
+        const frameScale = Math.min(elapsedMs / CORE_BASE_FRAME_MS, 2);
+        lastCoreFrameTime = timestamp;
+
+        ctx.clearRect(0, 0, cw, ch);
+
+        const energyMap = {
+          STANDBY: 1.0,
+          LISTENING: 1.38,
+          PROCESSING: 1.52,
+          SPEAKING: 1.48
+        };
+        const energy = energyMap[state.mode] || 1.0;
+        time += 0.016 * energy * frameScale;
+
+        const parallaxX = state.pointerX * 14;
+        const parallaxY = state.pointerY * 10;
+        const cx = cw * 0.5 + parallaxX;
+        const cy = ch * 0.5 + parallaxY;
+        const orbR = Math.min(cw, ch) * 0.215;
+
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+
+        // 1. Drifting Micro-Particle Stardust
+        stardust.forEach((p) => {
+          p.u += p.speed * energy * frameScale;
+          if (p.u > 1) p.u = 0;
+          const px = p.u * cw;
+          const normX = (px - cx) / (cw * 0.5);
+          const bandSpread = Math.exp(-normX * normX * 1.1) * (ch * 0.22) + 26;
+          const py = cy + p.v * bandSpread + Math.sin(time * 1.4 + p.phase) * 8;
+
+          ctx.beginPath();
+          ctx.arc(px, py, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = p.isGold
+            ? "rgba(255, 214, 120, 0.58)"
+            : "rgba(96, 240, 255, 0.55)";
+          ctx.fill();
+        });
+
+        // 2. Background Volumetric Silk-Light Ribbons (Behind Sphere)
+        backRibbons.forEach((r) => drawSilkRibbon(cx, cy, orbR, r, energy));
+
+        // 3. Ambient Volumetric Halo Behind Sphere
+        const halo = ctx.createRadialGradient(cx, cy, orbR * 0.3, cx, cy, orbR * 2.05);
+        halo.addColorStop(0.0, "rgba(56, 242, 255, 0.26)");
+        halo.addColorStop(0.45, "rgba(0, 165, 215, 0.10)");
+        halo.addColorStop(0.72, "rgba(255, 209, 102, 0.06)");
+        halo.addColorStop(1.0, "rgba(0, 0, 0, 0)");
+        ctx.fillStyle = halo;
+        ctx.beginPath();
+        ctx.arc(cx, cy, orbR * 2.05, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 4. Photorealistic 3D Refractive Plasma Sphere Interior
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(cx, cy, orbR, 0, Math.PI * 2);
+        ctx.clip();
+
+        // Deep optical sphere shading
+        const sphereBody = ctx.createRadialGradient(
+          cx - orbR * 0.28,
+          cy - orbR * 0.28,
+          orbR * 0.06,
+          cx,
+          cy,
+          orbR
+        );
+        sphereBody.addColorStop(0.0, "rgba(225, 252, 255, 0.32)");
+        sphereBody.addColorStop(0.45, "rgba(18, 130, 185, 0.18)");
+        sphereBody.addColorStop(0.82, "rgba(6, 24, 48, 0.38)");
+        sphereBody.addColorStop(1.0, "rgba(56, 242, 255, 0.28)");
+        ctx.fillStyle = sphereBody;
+        ctx.fillRect(cx - orbR, cy - orbR, orbR * 2, orbR * 2);
+
+        // Internal 3D Caustic Silk Filaments & Orbital Loops
+        for (let k = 0; k < 7; k++) {
+          const rot = time * (0.45 + k * 0.08) * (k % 2 === 0 ? 1 : -1) + k * 0.9;
+          ctx.save();
+          ctx.translate(cx, cy);
+          ctx.rotate(rot);
+
+          ctx.beginPath();
+          const rx = orbR * (0.86 - k * 0.05);
+          const ry = orbR * (0.34 + Math.sin(time + k) * 0.12);
+          ctx.ellipse(0, 0, rx, Math.abs(ry), 0, 0, Math.PI * 2);
+
+          ctx.strokeStyle =
+            k % 2 === 0
+              ? "rgba(86, 245, 255, 0.42)"
+              : "rgba(255, 212, 118, 0.38)";
+          ctx.lineWidth = k === 0 ? 2.6 : 1.6;
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // Luminous S-Wave Plasma Core Stream Passing Through Sphere
+        for (let s = 0; s < 4; s++) {
+          ctx.beginPath();
+          for (let dx = -orbR; dx <= orbR; dx += 3) {
+            const norm = dx / orbR;
+            const envelope = Math.cos(norm * Math.PI * 0.5);
+            const dy =
+              Math.sin(norm * Math.PI * 1.4 + time * 1.3 + s * 1.5) *
+              (orbR * 0.36) *
+              envelope *
+              energy;
+            const px = cx + dx;
+            const py = cy + dy;
+            if (dx === -orbR) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+          }
+          ctx.strokeStyle =
+            s % 2 === 0
+              ? "rgba(175, 252, 255, 0.65)"
+              : "rgba(255, 218, 130, 0.58)";
+          ctx.lineWidth = s === 0 ? 3.2 : 1.8;
+          ctx.stroke();
+        }
+
+        // Top-Left Glass Specular Lens Highlight
+        const glint = ctx.createRadialGradient(
+          cx - orbR * 0.36,
+          cy - orbR * 0.36,
+          1,
+          cx - orbR * 0.36,
+          cy - orbR * 0.36,
+          orbR * 0.44
+        );
+        glint.addColorStop(0, "rgba(255, 255, 255, 0.55)");
+        glint.addColorStop(0.5, "rgba(200, 248, 255, 0.14)");
+        glint.addColorStop(1, "rgba(255, 255, 255, 0)");
+        ctx.fillStyle = glint;
+        ctx.beginPath();
+        ctx.arc(cx - orbR * 0.36, cy - orbR * 0.36, orbR * 0.44, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore(); // End sphere clip
+
+        // 5. Foreground Silk-Light Ribbons Wrapping Across Front of Sphere
+        frontRibbons.forEach((r) => drawSilkRibbon(cx, cy, orbR, r, energy));
+
+        // 6. Fresnel Glass Sphere Rim Ring
+        const fresnelGrad = ctx.createLinearGradient(
+          cx - orbR,
+          cy - orbR,
+          cx + orbR,
+          cy + orbR
+        );
+        fresnelGrad.addColorStop(0.0, "rgba(240, 253, 255, 0.88)");
+        fresnelGrad.addColorStop(0.45, "rgba(56, 242, 255, 0.42)");
+        fresnelGrad.addColorStop(0.75, "rgba(255, 209, 102, 0.55)");
+        fresnelGrad.addColorStop(1.0, "rgba(220, 248, 255, 0.82)");
+
+        ctx.beginPath();
+        ctx.arc(cx, cy, orbR, 0, Math.PI * 2);
+        ctx.strokeStyle = fresnelGrad;
+        ctx.lineWidth = 1.8;
+        ctx.stroke();
+
+        ctx.restore();
+
+        coreAnimationFrame = requestAnimationFrame(renderCoreLoop);
+      }
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          if (coreAnimationFrame) cancelAnimationFrame(coreAnimationFrame);
+          coreAnimationFrame = 0;
+          lastCoreFrameTime = 0;
+          return;
+        }
+        if (!coreAnimationFrame) {
+          coreAnimationFrame = requestAnimationFrame(renderCoreLoop);
+        }
+      });
+
+      /* ------------------------------------------------------------------------
+         K. INITIALIZE APPLICATION
+         ------------------------------------------------------------------------ */
+      renderVoiceOptions();
+      renderSessionLog();
+      syncSettingsUI();
+      if (!document.hidden) {
+        coreAnimationFrame = requestAnimationFrame(renderCoreLoop);
+      }
+    })();
+  </script>
+</body>
+</html>
