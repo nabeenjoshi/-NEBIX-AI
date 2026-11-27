@@ -1,0 +1,348 @@
+{
+  "identity": {
+    "language": {
+      "value": "Nepali",
+      "updated": "2026-09-29"
+    },
+    "name": {
+      "value": "Nabin",
+      "updated": "2026-09-17"
+    },
+    "nickname": {
+      "value": "Nabin Sharma",
+      "updated": "2026-11-26"
+    },
+    "creator_name": {
+      "value": "Nabin Sir",
+      "updated": "2026-09-16"
+    },
+    "creation_date": {
+      "value": "September 16, 2026",
+      "updated": "2026-09-17"
+    },
+    "real_name": {
+      "value": "Nabin Joshi",
+      "updated": "2026-09-17"
+    },
+    "launch_date": {
+      "value": "September 16, 2026",
+      "updated": "2026-09-17"
+    },
+    "name_origin": {
+      "value": "Named after creator Nabin, but changed to NEBIX for a better AI assistant sounding name",
+      "updated": "2026-09-17"
+    },
+    "shop_location": {
+      "value": "Kathmandu, Tamrakar Complex, Shop Number 56",
+      "updated": "2026-09-18"
+    },
+    "shop_location_details": {
+      "value": "Kathmandu, Tamrakar Complex, Shop Number 56",
+      "updated": "2026-09-18"
+    },
+    "estimated_age_vision": {
+      "value": "7-10 years old based on visual analysis",
+      "updated": "2026-09-19"
+    },
+    "creator_name_variant": {
+      "value": "NABEENEYYY",
+      "updated": "2026-09-20"
+    },
+    "Creation Duration Months": {
+      "value": "1.5",
+      "updated": "2026-09-20"
+    },
+    "Language": {
+      "value": "Nepali",
+      "updated": "2026-09-20"
+    },
+    "Creation Date": {
+      "value": "September 16, 2026",
+      "updated": "2026-09-20"
+    },
+    "assistant_name_preference": {
+      "value": "NEBIX",
+      "updated": "2026-09-20"
+    },
+    "assistant_nickname_preference": {
+      "value": "NEBIX",
+      "updated": "2026-09-28"
+    },
+    "relationship_status": {
+      "value": "Nabin's respectful assistant, not friend",
+      "updated": "2026-10-01"
+    },
+    "relationship_nabin": {
+      "value": "assistant_not_friend",
+      "updated": "2026-10-01"
+    },
+    "shop_owner_status": {
+      "value": "Nabin explicitly stated he is NOT the owner of Crazy Laptops and wants this removed from memory.",
+      "updated": "2026-10-02"
+    },
+    "last_greeting_language": {
+      "value": "Nepali",
+      "updated": "2026-11-26"
+    }
+  },
+  "preferences": {
+    "nickname": {
+      "value": "Nabin Joshi",
+      "updated": "2026-09-17"
+    },
+    "startup_mode": {
+      "value": "activated_by_voice",
+      "updated": "2026-09-16"
+    },
+    "shutdown_command": {
+      "value": "jarvis_stop_or_nebix_stop",
+      "updated": "2026-09-16"
+    },
+    "interface_visibility": {
+      "value": "background_voice_only",
+      "updated": "2026-09-16"
+    },
+    "activation_keyword": {
+      "value": "nebix_activate",
+      "updated": "2026-09-17"
+    },
+    "greeting_preference": {
+      "value": "Welcome back sir",
+      "updated": "2026-09-28"
+    },
+    "browser": {
+      "value": "chrome",
+      "updated": "2026-09-17"
+    },
+    "agreement_word": {
+      "value": "hunchha",
+      "updated": "2026-09-17"
+    },
+    "avoid_word": {
+      "value": "huss",
+      "updated": "2026-09-17"
+    },
+    "nepali_romanized_style": {
+      "value": "uses 'xu' for 'chhu' and 'xau' for 'chhau'",
+      "updated": "2026-09-17"
+    },
+    "nepali_romanized_style_updated": {
+      "value": "xa=chha, xau=chhau, xu=chhu",
+      "updated": "2026-09-17"
+    },
+    "favorite_music_genre": {
+      "value": "Hindi romantic songs",
+      "updated": "2026-09-17"
+    },
+    "browser_workflow": {
+      "value": "chrome_fast_full_screen",
+      "updated": "2026-09-18"
+    },
+    "romantic_talk_request": {
+      "value": "like partner",
+      "updated": "2026-09-18"
+    },
+    "romantic_interest_topic": {
+      "value": "general conversation starters",
+      "updated": "2026-09-18"
+    },
+    "website_ux_flow": {
+      "value": "Display laptop photos first; view details requires login or sign up",
+      "updated": "2026-09-18"
+    },
+    "language": {
+      "value": "Nepali",
+      "updated": "2026-09-18"
+    },
+    "favorite_music": {
+      "value": "Nepali folk songs",
+      "updated": "2026-09-20"
+    },
+    "interface_style": {
+      "value": "futuristic like Jarvis",
+      "updated": "2026-09-20"
+    },
+    "Greeting Preference": {
+      "value": "sir only",
+      "updated": "2026-09-20"
+    },
+    "Favorite Music": {
+      "value": "Nepali folk songs",
+      "updated": "2026-09-20"
+    },
+    "Interface Style": {
+      "value": "futuristic",
+      "updated": "2026-09-20"
+    },
+    "assistant_nickname": {
+      "value": "JARVIS",
+      "updated": "2026-09-20"
+    },
+    "auto_start": {
+      "value": "true",
+      "updated": "2026-09-28"
+    },
+    "nebix_custom_shortcut_spec": {
+      "value": "The NEBIX shortcut must cause the app to autostart on boot. The custom icon at D:\\NEBIX\\config\\nebix.ico must be used for the shortcut and appear when pinned to the taskbar, instead of the default Python icon. Opening the shortcut should launch NEBIX directly, bypassing manual Python running and keeping standard editor windows minimized.",
+      "updated": "2026-09-28"
+    },
+    "hide_terminal_on_boot": {
+      "value": "always hide the console window when running on startup",
+      "updated": "2026-09-28"
+    },
+    "ui_design_preference": {
+      "value": "premium_button_styling",
+      "updated": "2026-09-29"
+    },
+    "personal_messaging_style": {
+      "value": "Nabin's Romanized Nepali texting style using contractions like 'xu', 'xau', 'vayo', etc.",
+      "updated": "2026-10-01"
+    }
+  },
+  "projects": {
+    "mandate_ui_errors": {
+      "value": "visual updates needed",
+      "updated": "2026-09-17"
+    },
+    "project_name": {
+      "value": "Nebix",
+      "updated": "2026-09-17"
+    },
+    "current_goal": {
+      "value": "Updating website prompts with WhatsApp link and TikTok URL",
+      "updated": "2026-09-18"
+    },
+    "website_features": {
+      "value": "add whatsapp contact section with number and tiktok url linkage with icon to existing website project",
+      "updated": "2026-09-18"
+    },
+    "website_new_features": {
+      "value": "Add contact section with whatsapp link text and iconic TikTok url",
+      "updated": "2026-09-18"
+    },
+    "website_business_model": {
+      "value": "Buy and sell new and second-hand laptops",
+      "updated": "2026-09-18"
+    },
+    "website_features_update_sept_2026": {
+      "value": "Add admin panel for dynamic photo/video uploads without coding, WhatsApp contact, TikTok link with icon",
+      "updated": "2026-09-18"
+    },
+    "website_search_filters": {
+      "value": "Add search bar and filters for laptop brands: Asus, Lenovo, HP, Dell, Acer, Apple/MacBook",
+      "updated": "2026-09-18"
+    },
+    "website_dynamic_features": {
+      "value": "Show sold laptops in dedicated section; enable genuine user ratings and reviews",
+      "updated": "2026-09-18"
+    },
+    "active_file_check": {
+      "value": "user searching code for comment",
+      "updated": "2026-09-20"
+    },
+    "code_change_state": {
+      "value": "applying chatgpt code for ball.gif",
+      "updated": "2026-09-20"
+    },
+    "custom_interface_elements": {
+      "value": "Rotating arc reactor core, data circles, moon phase display, system status (CPU/RAM/GPU), user temperature, dynamic text.",
+      "updated": "2026-09-20"
+    },
+    "Creation Date": {
+      "value": "September 16, 2026",
+      "updated": "2026-09-20"
+    },
+    "Launch Date": {
+      "value": "September 16, 2026",
+      "updated": "2026-09-20"
+    },
+    "has spoken to you in": {
+      "value": "Nepali",
+      "updated": "2026-09-20"
+    },
+    "Nickname": {
+      "value": "Nabin Sir",
+      "updated": "2026-09-20"
+    },
+    "programming_task_description": {
+      "value": "Connect Index.html, Style.css, app.js, Web_Ui.py, and main.py per user's prompt",
+      "updated": "2026-09-24"
+    },
+    "development_preference": {
+      "value": "autostart, icon, custom shortcut, no manual VSCode needed to run",
+      "updated": "2026-09-28"
+    },
+    "nebix_shortcut_prompt": {
+      "value": "The NEBIX shortcut must autostart the app on boot, use D:\\NEBIX\\config\\nebix.ico for the shortcut and pinned taskbar (not the Python icon), and launch NEBIX directly without running Python manually or opening editor windows.",
+      "updated": "2026-09-28"
+    }
+  },
+  "relationships": {
+    "alisha_contact_name": {
+      "value": "Alisha",
+      "updated": "2026-09-17"
+    }
+  },
+  "wishes": {
+    "travel_plan": {
+      "value": "KTM to BWA, Oct 1st",
+      "updated": "2026-09-17"
+    }
+  },
+  "notes": {
+    "creation_duration_months": {
+      "value": "3 months to build as of September 17, 2026",
+      "updated": "2026-09-17"
+    },
+    "on_screen_control_preference": {
+      "value": "follow_instructions_exactly_check_all_methods_show_result_on_screen",
+      "updated": "2026-09-18"
+    },
+    "audio_issue_sep_2026": {
+      "value": "User reported sound not coming through 'Built Audio Earbuds'",
+      "updated": "2026-09-18"
+    },
+    "system_theme_color": {
+      "value": "Cyan/light blue on black background.",
+      "updated": "2026-09-20"
+    },
+    "interface_branding": {
+      "value": "'NEBIX' centered, 'by NABINEYYY' branding on top and side.",
+      "updated": "2026-09-20"
+    },
+    "latest_app_action": {
+      "value": "opening Gemini for image task",
+      "updated": "2026-09-20"
+    },
+    "system_status": {
+      "value": "NEBIX v3.0",
+      "updated": "2026-09-20"
+    }
+  },
+  "note": {
+    "name_change_perception": {
+      "value": "Acknowledged name change to NEBIX",
+      "updated": "2026-09-16"
+    }
+  },
+  "monitors": {
+    "mandate_ui_errors_visual_updates": {
+      "topic": "Mandate Ui Errors visual updates",
+      "added": "2026-09-17",
+      "last_check": "",
+      "last_hash": ""
+    },
+    "how_to_make_script_run_at_startup_withou": {
+      "topic": "how to make script run at startup without interface",
+      "added": "2026-09-17",
+      "last_check": "",
+      "last_hash": ""
+    },
+    "e_commerce_website_features_for_small_el": {
+      "topic": "e-commerce website features for small electronics shops",
+      "added": "2026-09-18",
+      "last_check": "",
+      "last_hash": ""
+    }
+  }
+}
